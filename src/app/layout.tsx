@@ -7,7 +7,6 @@ const archivo = Archivo({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
   title: "Shiko Portal | Shiko Education",
   description: "",
@@ -20,9 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${archivo.variable} antialiased`}>
+      <body className={`${archivo.variable} antialiased min-h-screen`}>
         {children}
-        </body>
+      </body>
     </html>
   );
 }
