@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: hsla(210, 14%, 97%, 1);
   --foreground: #171717;
   --primary: #ED5735;
   --secondary: #2C3545;
@@ -47,13 +47,7 @@
   --color-secondary: var(--secondary);
   --color-font: var(--font);
   --font-sans: var(--font-archivo);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --breakpoint-3xl: 120rem;
 }
 
 body {
