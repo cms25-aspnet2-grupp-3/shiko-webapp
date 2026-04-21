@@ -12,7 +12,7 @@ const ChatBox = () => {
     ];
 
     return (
-        <div className="p-4 bg-white rounded-2xl shadow-md max-w-sm">
+            <div className="w-full h-full">
             <h2 className="text-xl font-bold">Chats</h2>
             <p className="text-gray-500 text-sm mb-4">2 unread messages</p>
 
