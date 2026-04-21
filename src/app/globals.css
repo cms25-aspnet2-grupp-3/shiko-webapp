@@ -60,3 +60,11 @@ body {
   background: var(--background);
   color: var(--foreground);
 font-family: var(--font-archivo);}
+
+#buttonprimary {
+  color: var(--primary);
+}
+
+#buttonsecondary {
+  color: var(--secondary)
+}
