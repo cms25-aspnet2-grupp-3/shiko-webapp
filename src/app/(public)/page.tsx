@@ -1,3 +1,5 @@
+import ChatBox from "@/components/ChatBox";
+
 type HomeProps = Readonly<{
   gapClassName?: string;
   roundedClassName?: string;
@@ -20,24 +22,16 @@ export default function Home({
       <div
         className={`grid grid-cols-1 ${gapClassName} sm:grid-cols-2 3xl:grid-cols-4 3xl:grid-rows-2`}
       >
-        <section
-          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}
-        >
+        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}>
           Total Course
         </section>
-        <section
-          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}
-        >
+        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}>
           Course Complete
         </section>
-        <section
-          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}
-        >
-          Course In Progess
+        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}>
+          Course In Progress
         </section>
-        <section
-          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}
-        >
+        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}>
           Upcoming Live Courses
         </section>
         <section
@@ -46,21 +40,22 @@ export default function Home({
           Course
         </section>
       </div>
+
       <div
-        className={`grid grid-cols-1 ${gapClassName} sm:grid-cols-2 3xl:grid-cols-4`}
+        className={`grid grid-cols-1 ${gapClassName} sm:grid-cols-2 lg:grid-cols-4`}
       >
         <section
-          className={`${cardBaseClassName} sm:col-span-2 3xl:col-start-1 3xl:col-span-3 3xl:row-start-1 3xl:row-span-2 3xl:h-full`}
+          className={`${cardBaseClassName} sm:col-span-2 lg:col-start-1 lg:col-span-3 lg:row-start-1 lg:row-span-2 lg:h-full`}
         >
           Your assignments
         </section>
+
+        <div className={`${cardBaseClassName} lg:col-start-4 lg:col-span-1 lg:row-start-1`}>
+          <ChatBox />
+        </div>
+
         <section
-          className={`${cardBaseClassName} 3xl:col-start-4 3xl:col-span-1 3xl:row-start-1`}
-        >
-          Chats
-        </section>
-        <section
-          className={`${cardBaseClassName} 3xl:col-start-4 3xl:col-span-1 3xl:row-start-2`}
+          className={`${cardBaseClassName} lg:col-start-4 lg:col-span-1 lg:row-start-2 3xl:col-start-4`}
         >
           Community
         </section>
