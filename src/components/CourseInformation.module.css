@@ -1,0 +1,15 @@
+.totalcourse {
+    display: flex;
+}
+
+.coursecompleted {
+    display: flex;
+}
+
+.courseinprogress {
+    display: flex;
+}
+
+.completedlivecourses {
+    display: flex;
+}
