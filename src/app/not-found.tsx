@@ -3,8 +3,7 @@ import Image from 'next/image';
 
 export default function NotFound() {
     return (
-        <div className='flex flex-col items-center justify-center min-h-screen bg-[#2d3748] text-white px-4 text-center'>
-            <div className='mb-8'>
+            <div className='flex flex-col items-center justify-center min-h-screen bg-secondary text-white px-4 text-center'>            <div className='mb-8'>
                 <Image 
                     src="/error-404.png"
                     alt="404 Illustration" 
@@ -25,8 +24,7 @@ export default function NotFound() {
 
             <Link 
                 href="/" 
-                className="bg-[#f0623e] hover:bg-[#d55435] text-white font-semibold py-3 px-8 rounded-md transition-colors duration-200 flex items-center gap-2"
-            >
+                className="bg-primary hover:opacity-90 text-white font-semibold py-3 px-8 rounded-md transition-all duration-200 flex items-center gap-2"            >
                 Back to Home <span>↗</span>
             </Link>
 
