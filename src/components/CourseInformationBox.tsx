@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const CourseInformationBox = () => {
 return (
-    <div>
+    <div className="grid grid-cols-2" >
         <div className={styles["totalcourse"]}>
             <div className="upper1">
                 <Image src="/icons/Open Book.svg" alt="Open Book icon" width={20} height={20} />
