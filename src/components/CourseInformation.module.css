@@ -1,15 +1,19 @@
 .totalcourse {
     display: flex;
+    align-items: center;
 }
 
 .coursecompleted {
     display: flex;
+    align-items: center;
 }
 
 .courseinprogress {
     display: flex;
+    align-items: center;
 }
 
 .completedlivecourses {
     display: flex;
+    align-items: center;
 }
