@@ -25,8 +25,13 @@ export default function Home({
 
   return (
     <div className={`grid ${gapClassName} ${roundedClassName}`}>
-      <div>
+      <div className='grid grid-cols-2'>
         <CourseInformationBox />
+        <section
+          className={`${cardBaseClassName}`}
+        >
+          Course
+        </section>
       </div>
 
       <div
