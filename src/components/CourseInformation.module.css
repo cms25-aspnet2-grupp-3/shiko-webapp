@@ -10,7 +10,7 @@
     box-sizing: border-box;
 }
 
-.coursecompleted {
+.coursecomplete {
     width: 300px;
     max-width: 100%;
     height: 200px;
@@ -46,4 +46,14 @@
     border-radius: 2rem;
     margin-top: 1rem;
     box-sizing: border-box;
+}
+
+.informationicon {
+    background-color: var(--background);
+    border-radius: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
 }
