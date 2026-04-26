@@ -2,8 +2,8 @@ import { Suspense } from "react";
 
 import ChatBox from "@/components/ChatBox";
 
-import CurrentHeroContentView from "@/features/hero-content/current-hero-content-view";
-import CurrentHeroContentSkeleton from "@/features/hero-content/current-hero-content-skeleton";
+import HeroContent from "@/features/hero-content/hero-content";
+import HeroContentSkeleton from "@/features/hero-content/hero-content-skeleton";
 
 type HomeProps = Readonly<{
   gapClassName?: string;
@@ -52,10 +52,10 @@ export default function Home({
         </section>
 
         <section
-          className={`${cardBaseClassName} sm:col-span-2 3xl:col-span-2 3xl:row-span-2 3xl:h-full`}
+          className={`${cardRoundedClassName} ${cardBackgroundClassName} p-8 pb-0 sm:col-span-2 3xl:col-span-2 3xl:row-span-2 3xl:h-full overflow-hidden`}
         >
-          <Suspense fallback={<CurrentHeroContentSkeleton />}>
-            <CurrentHeroContentView />
+          <Suspense fallback={<HeroContentSkeleton />}>
+            <HeroContent />
           </Suspense>
         </section>
       </div>

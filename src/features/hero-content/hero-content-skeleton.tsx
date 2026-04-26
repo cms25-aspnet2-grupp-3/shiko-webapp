@@ -1,4 +1,4 @@
-export default function CurrentHeroContentSkeleton() {
+export default function HeroContentSkeleton() {
   return (
     <div className="space-y-3">
       <div className="h-4 w-40 animate-pulse rounded bg-background" />
