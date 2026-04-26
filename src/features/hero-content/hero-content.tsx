@@ -11,5 +11,9 @@ export default async function HeroContent() {
     return <p className="mb-8 text-lg font-semibold">Something went wrong</p>;
   }
 
+  if (!content) {
+    return <p className="mb-8 text-lg font-semibold">No active hero</p>;
+  }
+
   return <HeroContentCard content={content} />;
 }
