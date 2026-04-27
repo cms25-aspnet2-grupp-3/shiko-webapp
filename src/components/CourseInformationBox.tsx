@@ -12,8 +12,8 @@ return (
                     </div>
                     <div className="font-bold text-4xl">100</div>
                 </div>
-                <p className="font-bold text-lg">Total Course</p>
-                <a className="row-start-3">view details placeholder</a>
+                <p className="font-bold text-lg pt-2">Total Course</p>
+                <a className="row-start-3 underline text-sm" href="">view details placeholder</a>
             </div>
         </section>
 
@@ -25,8 +25,8 @@ return (
                     </div>
                     <div className="font-bold text-4xl">21</div>
                 </div>
-                <p className="font-bold text-lg">Course Complete</p>
-                <a className="row-start-3">view details placeholder</a>
+                <p className="font-bold text-lg pt-2">Course Complete</p>
+                <a className="row-start-3 underline text-sm" href="">view details placeholder</a>
             </div>
         </section>
 
@@ -38,8 +38,8 @@ return (
                     </div>
                     <div className="font-bold text-4xl">??</div>
                 </div>
-                <p className="font-bold text-lg">Course In Progress</p>
-                <a className="row-start-3">view details placeholder</a>
+                <p className="font-bold text-lg pt-2">Course In Progress</p>
+                <a className="row-start-3 underline text-sm" href="">view details placeholder</a>
             </div>
         </section>
 
@@ -51,8 +51,8 @@ return (
                     </div>
                     <div className="font-bold text-4xl">0</div>
                 </div>
-                <p className="font-bold text-lg">Upcoming Live Courses</p>
-                <a className="row-start-3">view details placeholder</a>
+                <p className="font-bold text-lg pt-2">Upcoming Live Courses</p>
+                <a className="row-start-3 underline text-sm" href="">view details placeholder</a>
             </div>
         </section>
     </div>
