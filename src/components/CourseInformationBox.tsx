@@ -12,9 +12,9 @@ return (
                     </div>
                     <div className="font-bold text-5xl">100</div>
                 </div>
-                <p className="font-bold text-lg pt-2">Total Course</p>
+                <p className="font-semibold text-xl pt-2">Total Course</p>
                 <div className="flex flex-row items-center gap-2 pt-1">
-                    <a className="row-start-3 underline text-sm font-medium" href="">View Details</a>
+                    <a className="row-start-3 underline text-base font-medium" href="">View Details</a>
                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                 </div>
             </div>
@@ -28,9 +28,9 @@ return (
                     </div>
                     <div className="font-bold text-5xl">21</div>
                 </div>
-                <p className="font-bold text-lg pt-2">Course Complete</p>
+                <p className="font-semibold text-xl pt-2">Course Complete</p>
                 <div className="flex flex-row items-center gap-2 pt-1">
-                    <a className="row-start-3 underline text-sm font-medium" href="">View Details</a>
+                    <a className="row-start-3 underline text-base font-medium" href="">View Details</a>
                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                 </div>
             </div>
@@ -44,9 +44,9 @@ return (
                     </div>
                     <div className="font-bold text-5xl">??</div>
                 </div>
-                <p className="font-bold text-lg pt-2">Course In Progress</p>
+                <p className="font-semibold text-xl pt-2">Course In Progress</p>
                 <div className="flex flex-row items-center gap-2 pt-1">
-                    <a className="row-start-3 underline text-sm font-medium" href="">View Details</a>
+                    <a className="row-start-3 underline text-base font-medium" href="">View Details</a>
                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                 </div>
             </div>
@@ -60,9 +60,9 @@ return (
                     </div>
                     <div className="font-bold text-5xl">0</div>
                 </div>
-                <p className="font-bold text-lg pt-2">Upcoming Live Courses</p>
+                <p className="font-semibold text-xl pt-2">Upcoming Live Courses</p>
                 <div className="flex flex-row items-center gap-2 pt-1">
-                    <a className="row-start-3 underline text-sm font-medium" href="">View Details</a>
+                    <a className="row-start-3 underline text-base font-normal" href="">View Details</a>
                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                 </div>
             </div>
