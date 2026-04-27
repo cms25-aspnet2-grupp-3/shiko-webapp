@@ -1,4 +1,9 @@
+import { Suspense } from "react";
+
 import ChatBox from "@/components/ChatBox";
+
+import HeroContent from "@/features/hero-content/hero-content";
+import HeroContentSkeleton from "@/features/hero-content/hero-content-skeleton";
 
 type HomeProps = Readonly<{
   gapClassName?: string;
@@ -22,22 +27,36 @@ export default function Home({
       <div
         className={`grid grid-cols-1 ${gapClassName} sm:grid-cols-2 3xl:grid-cols-4 3xl:grid-rows-2`}
       >
-        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}>
+        <section
+          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}
+        >
           Total Course
         </section>
-        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}>
+
+        <section
+          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-1`}
+        >
           Course Complete
         </section>
-        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}>
+
+        <section
+          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}
+        >
           Course In Progress
         </section>
-        <section className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}>
+
+        <section
+          className={`${cardBaseClassName} 3xl:col-span-1 3xl:row-start-2`}
+        >
           Upcoming Live Courses
         </section>
+
         <section
-          className={`${cardBaseClassName} sm:col-span-2 3xl:col-span-2 3xl:row-span-2 3xl:h-full`}
+          className={`${cardRoundedClassName} ${cardBackgroundClassName} p-8 pb-0 sm:col-span-2 3xl:col-span-2 3xl:row-span-2 3xl:h-full overflow-hidden`}
         >
-          Course
+          <Suspense fallback={<HeroContentSkeleton />}>
+            <HeroContent />
+          </Suspense>
         </section>
       </div>
 
@@ -50,7 +69,9 @@ export default function Home({
           Your assignments
         </section>
 
-        <div className={`${cardBaseClassName} lg:col-start-4 lg:col-span-1 lg:row-start-1`}>
+        <div
+          className={`${cardBaseClassName} lg:col-start-4 lg:col-span-1 lg:row-start-1`}
+        >
           <ChatBox />
         </div>
 
