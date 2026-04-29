@@ -25,10 +25,12 @@ export default function Home({
 
   return (
     <div className={`grid ${gapClassName} ${roundedClassName}`}>
-      <div className={`grid grid-cols-2 ${gapClassName}`}>
-        <CourseInformationBox />
+      <div className={`grid grid-cols-1 items-start ${gapClassName} 2xl:grid-cols-2`}>
+        <div className="h-full">
+          <CourseInformationBox />
+        </div>
         <section
-          className={`${cardRoundedClassName} ${cardBackgroundClassName} p-8 pb-0 sm:col-span-2 3xl:col-span-2 3xl:row-span-2 3xl:h-full overflow-hidden`}
+          className={`${cardRoundedClassName} ${cardBackgroundClassName} h-full overflow-hidden p-8 pb-0`}
         >
           <Suspense fallback={<HeroContentSkeleton />}>
             <HeroContent />
