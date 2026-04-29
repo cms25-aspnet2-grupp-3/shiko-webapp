@@ -1,47 +1,81 @@
-import React from 'react';
-import Image from 'next/image'; 
+"use client";
+
+import React, { useEffect, useState } from "react";
+
+type Message = {
+    id: number;
+    senderId: number;
+    receiverId: number;
+    content: string;
+    sentAt: string;
+};
 
 const ChatBox = () => {
+    const [messages, setMessages] = useState<Message[]>([]);
+
     const chatUsers = [
-        { id: 1, img: "/bilder(profiltestbilder)/Rectangle 1.png", name: "John Doe", unread: true },
-        { id: 2, img: "/bilder(profiltestbilder)/Rectangle 2.png", name: "Jane Smith", unread: true },
-        { id: 3, img: "/bilder(profiltestbilder)/Rectangle 3.png", name: "Alice Johnson", unread: false },
-        { id: 4, img: "/bilder(profiltestbilder)/Rectangle 4.png", name: "Bob Brown", unread: false },
-        { id: 5, img: "/bilder(profiltestbilder)/Rectangle 5.png", name: "Charlie Davis", unread: false },
-        { id: 6, img: "/bilder(profiltestbilder)/Rectangle 6.png", name: "Diana Wilson", unread: false },
+        { id: 1, name: "John Doe" },
+        { id: 2, name: "Jane Smith" },
+        { id: 3, name: "Alice Johnson" },
     ];
 
+    useEffect(() => {
+        fetch("http://localhost:5147/api/chat/conversation?user1=1&user2=2")
+            .then(res => res.json())
+            .then(data => setMessages(data))
+            .catch(err => console.error("Chat fetch error:", err));
+    }, []);
+
+    const sendMessage = async () => {
+        await fetch("http://localhost:5147/api/chat/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                senderId: 1,
+                receiverId: 2,
+                content: "Hej från Next.js!"
+            })
+        });
+
+        // reload messages after send
+        const res = await fetch("http://localhost:5147/api/chat/conversation?user1=1&user2=2");
+        const data = await res.json();
+        setMessages(data);
+    };
+
     return (
-            <div className="w-full h-full">
-            <h2 className="text-xl font-bold">Chats</h2>
-            <p className="text-gray-500 text-sm mb-4">2 unread messages</p>
+        <div className="w-full h-full p-4">
 
-            <div className="flex space-x-4">
-                {chatUsers.map((user) => (
-                    <div key={user.id} className="relative">
-                        <Image 
-                            src={user.img}  
-                            alt={user.name}
-                            width={40}  
-                            height={40} 
-                            className={`rounded-full border-2 border-white object-cover ${
-                                user.unread ? 'ring-6 ring-pink-100' : ''
-                            }`}
-                        />
+            <h2 className="text-xl font-bold mb-2">Chats</h2>
 
-                        {user.unread && (
-                            <span 
-                                className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" 
-                                title="Unread message"
-                            />
-                        )}
+            {/* USERS */}
+            <div className="flex gap-2 mb-4">
+                {chatUsers.map(user => (
+                    <div key={user.id} className="px-2 py-1 border rounded">
+                        {user.name}
                     </div>
                 ))}
             </div>
 
-            <button className="mt-4 text-sm font-semibold flex items-center hover:text-blue-600 transition-colors">
-                All Messages <span className="ml-1">→</span>
+            {/* MESSAGES */}
+            <div className="space-y-2 mb-4">
+                {messages.map(msg => (
+                    <div key={msg.id} className="p-2 border rounded">
+                        <b>User {msg.senderId}</b>: {msg.content}
+                    </div>
+                ))}
+            </div>
+
+            {/* SEND BUTTON */}
+            <button
+                onClick={sendMessage}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+                Send Test Message
             </button>
+
         </div>
     );
 };

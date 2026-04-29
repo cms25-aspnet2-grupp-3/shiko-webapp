@@ -13,14 +13,15 @@ export default function NotFound() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "x-api-key": "aZ9kL27mNqP5xR92vTzB1_Lp90sQwE"                    },
+                        "x-api-key": "aZ9kL27mNqP5xR92sQwE"
+                    },
                     body: JSON.stringify({
                         invalidUrl: window.location.href,
                         referrer: document.referrer,
                         userAgent: navigator.userAgent
                     })
                 });
-
+                    
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.warn("Loggning misslyckades på servern:", errorText);
