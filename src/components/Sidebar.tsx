@@ -1,40 +1,38 @@
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const menu = [
-  { name: "Dashboard", icon: "/icons/dashboard-icon.svg", href: "/dashboard" },
-  { name: "Courses", icon: "/icons/courses-icon.svg", href: "/courses" },
-  { name: "Calendar", icon: "/icons/calender-icon.svg", href: "/calendar" },
-  { name: "Live Class", icon: "/icons/liveclass-icon.svg", href: "/live" },
-];
-
-const general = [
-  { name: "Profile", icon: "/icons/profile-icon.svg", href: "/profile" },
-  { name: "Settings", icon: "/icons/settings-icon.svg", href: "/settings" },
-  { name: "Help Center", icon: "/icons/helpcenter-icon.svg", href: "/help" },
-  { name: "Log Out", icon: "/icons/logout-icon.svg", href: "/logout" },
-];
+type MenuItem = {
+  title: string;
+  path: string;
+  icon: string;
+};
 
 export default function Sidebar() {
+  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [general, setGeneral] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    fetch("https://localhost:4443/api/sidebar")
+      .then(res => res.json())
+      .then(data => {
+        setMenu(data.menu);
+        setGeneral(data.general);
+      });
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
-
-      
 
       {/* MENU */}
       <div className="text-sm text-gray-400">MENU</div>
 
       {menu.map((item) => (
-        <Link key={item.name} href={item.href}>
+        <Link key={item.title} href={item.path}>
           <div className="group flex items-center gap-3 p-2 rounded-2xl cursor-pointer transition hover:bg-[#F9CCCB]">
-            
             <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center transition group-hover:bg-[#ED5735]">
-              <img src={item.icon} className="w-5 h-5" alt="toggle" />
+              <img src={item.icon} className="w-5 h-5" alt={item.title} />
             </span>
-
-            <span className="text-gray-800">
-              {item.name}
-            </span>
-
+            <span className="text-gray-800">{item.title}</span>
           </div>
         </Link>
       ))}
@@ -43,17 +41,12 @@ export default function Sidebar() {
       <div className="text-sm text-gray-400 mt-4">GENERAL</div>
 
       {general.map((item) => (
-        <Link key={item.name} href={item.href}>
+        <Link key={item.title} href={item.path}>
           <div className="group flex items-center gap-3 p-2 rounded-2xl cursor-pointer transition hover:bg-[#F9CCCB]">
-            
             <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center transition group-hover:bg-[#ED5735]">
-              <img src={item.icon} className="w-5 h-5" alt="toggle"/>
+              <img src={item.icon} className="w-5 h-5" alt={item.title} />
             </span>
-
-            <span className="text-gray-800">
-              {item.name}
-            </span>
-
+            <span className="text-gray-800">{item.title}</span>
           </div>
         </Link>
       ))}
