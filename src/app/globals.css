@@ -47,6 +47,7 @@
   --color-secondary: var(--secondary);
   --color-font: var(--font);
   --font-sans: var(--font-archivo);
+  --breakpoint-3xl: 120rem;
 }
 
 body {
