@@ -7,32 +7,34 @@ import Image from 'next/image';
 export default function NotFound() {
 
     useEffect(() => {
-        const logNotFound = async () => {
-            try {
-                const response = await fetch("https://localhost:7247/api/NotFound/log", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-api-key": "aZ9kL27mNqP5xR92sQwE"
-                    },
-                    body: JSON.stringify({
-                        invalidUrl: window.location.href,
-                        referrer: document.referrer,
-                        userAgent: navigator.userAgent
-                    })
-                });
-                    
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.warn("Loggning misslyckades på servern:", errorText);
-                }
-            } catch (error) {
-                console.error("Kunde inte ansluta till API:et (Nätverksfel):", error);
-            }
-        };
+    if (typeof window === "undefined") return;
 
-        logNotFound();
-    }, []);
+    const logNotFound = async () => {
+        try {
+            const response = await fetch("https://localhost:7247/api/monitoring/log", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": "aZ9kL27mNqP5xR92sQwE"
+                },
+                body: JSON.stringify({
+                    invalidUrl: window.location.href,
+                    referrer: document.referrer,
+                    userAgent: navigator.userAgent
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.warn("Loggning misslyckades på servern:", errorText);
+            }
+        } catch (error) {
+            console.error("Kunde inte ansluta till API:et:", error);
+        }
+    };
+
+    logNotFound();
+}, []);
 
     return (
         <div className='flex flex-col items-center justify-center min-h-screen bg-secondary text-white px-4 text-center'>

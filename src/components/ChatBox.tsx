@@ -10,22 +10,30 @@ type Message = {
     sentAt: string;
 };
 
+type User = {
+    id: number;
+    name: string;
+};
+
 const ChatBox = () => {
     const [messages, setMessages] = useState<Message[]>([]);
+    const [selectedUser, setSelectedUser] = useState<number>(2);
 
-    const chatUsers = [
+    const chatUsers: User[] = [
         { id: 1, name: "John Doe" },
         { id: 2, name: "Jane Smith" },
         { id: 3, name: "Alice Johnson" },
     ];
 
+    // HÄMTA MESSAGES
     useEffect(() => {
-        fetch("http://localhost:5147/api/chat/conversation?user1=1&user2=2")
+        fetch(`http://localhost:5147/api/chat/conversation?user1=1&user2=${selectedUser}`)
             .then(res => res.json())
             .then(data => setMessages(data))
-            .catch(err => console.error("Chat fetch error:", err));
-    }, []);
+            .catch(err => console.error(err));
+    }, [selectedUser]);
 
+    // SKICKA MESSAGE
     const sendMessage = async () => {
         await fetch("http://localhost:5147/api/chat/send", {
             method: "POST",
@@ -34,26 +42,30 @@ const ChatBox = () => {
             },
             body: JSON.stringify({
                 senderId: 1,
-                receiverId: 2,
+                receiverId: selectedUser,
                 content: "Hej från Next.js!"
             })
         });
 
-        // reload messages after send
-        const res = await fetch("http://localhost:5147/api/chat/conversation?user1=1&user2=2");
+        // reload
+        const res = await fetch(`http://localhost:5147/api/chat/conversation?user1=1&user2=${selectedUser}`);
         const data = await res.json();
         setMessages(data);
     };
 
     return (
-        <div className="w-full h-full p-4">
-
-            <h2 className="text-xl font-bold mb-2">Chats</h2>
+        <div className="p-4">
 
             {/* USERS */}
             <div className="flex gap-2 mb-4">
                 {chatUsers.map(user => (
-                    <div key={user.id} className="px-2 py-1 border rounded">
+                    <div
+                        key={user.id}
+                        onClick={() => setSelectedUser(user.id)}
+                        className={`px-3 py-1 border rounded cursor-pointer ${
+                            selectedUser === user.id ? "bg-blue-300" : ""
+                        }`}
+                    >
                         {user.name}
                     </div>
                 ))}
@@ -62,18 +74,18 @@ const ChatBox = () => {
             {/* MESSAGES */}
             <div className="space-y-2 mb-4">
                 {messages.map(msg => (
-                    <div key={msg.id} className="p-2 border rounded">
-                        <b>User {msg.senderId}</b>: {msg.content}
+                    <div key={msg.id} className="border p-2 rounded">
+                        <b>{msg.senderId}</b>: {msg.content}
                     </div>
                 ))}
             </div>
 
-            {/* SEND BUTTON */}
+            {/* BUTTON */}
             <button
                 onClick={sendMessage}
                 className="bg-blue-600 text-white px-4 py-2 rounded"
             >
-                Send Test Message
+                Send message
             </button>
 
         </div>
