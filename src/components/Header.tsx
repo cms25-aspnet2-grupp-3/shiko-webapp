@@ -24,7 +24,7 @@ export default function Header() {
 
                 <div className={styles["user-profile"]}>
                     <button className={styles["user-image"]}>
-                        <Image src="/images/profile-sample.png" alt="Notification" width={60} height={60} />
+                        <Image src="https://shikoimagestoragegrp3.blob.core.windows.net/images/profile-sample.png" alt="Profile" width={60} height={60} />
                     </button>
                     <div className={styles["user-info"]}>
                         <span className={styles["user-name"]}>Oscar Taberman</span>
