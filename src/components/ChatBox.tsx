@@ -15,6 +15,8 @@ type User = {
     name: string;
 };
 
+const API_CHAT = "https://localhost:5276";
+
 const ChatBox = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [selectedUser, setSelectedUser] = useState<number>(2);
@@ -27,7 +29,7 @@ const ChatBox = () => {
 
     // HÄMTA MESSAGES
     useEffect(() => {
-        fetch(`http://localhost:5147/api/chat/conversation?user1=1&user2=${selectedUser}`)
+        fetch(`${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`)
             .then(res => res.json())
             .then(data => setMessages(data))
             .catch(err => console.error(err));
@@ -35,7 +37,7 @@ const ChatBox = () => {
 
     // SKICKA MESSAGE
     const sendMessage = async () => {
-        await fetch("http://localhost:5147/api/chat/send", {
+        await fetch(`${API_CHAT}/api/chat/send`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -47,8 +49,11 @@ const ChatBox = () => {
             })
         });
 
-        // reload
-        const res = await fetch(`http://localhost:5147/api/chat/conversation?user1=1&user2=${selectedUser}`);
+        // reload messages
+        const res = await fetch(
+            `${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`
+        );
+
         const data = await res.json();
         setMessages(data);
     };
@@ -90,6 +95,8 @@ const ChatBox = () => {
 
         </div>
     );
+
+    <div></div>
 };
 
 export default ChatBox;
