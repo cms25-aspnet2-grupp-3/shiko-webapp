@@ -15,7 +15,7 @@ type User = {
     name: string;
 };
 
-const API_CHAT = "https://localhost:5276";
+const API_CHAT = "https://shikochatbox.azurewebsites.net";
 
 const ChatBox = () => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -29,7 +29,11 @@ const ChatBox = () => {
 
     // HÄMTA MESSAGES
     useEffect(() => {
-        fetch(`${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`)
+        fetch(`${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`, {
+            headers: {
+                "x-api-key": "min-super-secret-key"
+            }
+        })
             .then(res => res.json())
             .then(data => setMessages(data))
             .catch(err => console.error(err));
@@ -37,30 +41,39 @@ const ChatBox = () => {
 
     // SKICKA MESSAGE
     const sendMessage = async () => {
-        await fetch(`${API_CHAT}/api/chat/send`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                senderId: 1,
-                receiverId: selectedUser,
-                content: "Hej från Next.js!"
-            })
-        });
+        try {
+            await fetch(`${API_CHAT}/api/chat/send`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": "min-super-secret-key"
+                },
+                body: JSON.stringify({
+                    senderId: 1,
+                    receiverId: selectedUser,
+                    content: "Hej från Next.js!"
+                })
+            });
 
-        // reload messages
-        const res = await fetch(
-            `${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`
-        );
+            // RELOAD MESSAGES - KOM IHÅG HEADERS HÄR OCKSÅ!
+            const res = await fetch(
+                `${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`,
+                {
+                    headers: {
+                        "x-api-key": "min-super-secret-key"
+                    }
+                }
+            );
 
-        const data = await res.json();
-        setMessages(data);
+            const data = await res.json();
+            setMessages(data);
+        } catch (err) {
+            console.error("Kunde inte skicka meddelande:", err);
+        }
     };
 
     return (
         <div className="p-4">
-
             {/* USERS */}
             <div className="flex gap-2 mb-4">
                 {chatUsers.map(user => (
@@ -78,25 +91,26 @@ const ChatBox = () => {
 
             {/* MESSAGES */}
             <div className="space-y-2 mb-4">
-                {messages.map(msg => (
-                    <div key={msg.id} className="border p-2 rounded">
-                        <b>{msg.senderId}</b>: {msg.content}
-                    </div>
-                ))}
+                {messages && messages.length > 0 ? (
+                    messages.map(msg => (
+                        <div key={msg.id} className="border p-2 rounded">
+                            <b>{msg.senderId === 1 ? "Jag" : "Annan"}</b>: {msg.content}
+                        </div>
+                    ))
+                ) : (
+                    <p>Inga meddelanden ännu...</p>
+                )}
             </div>
 
             {/* BUTTON */}
             <button
                 onClick={sendMessage}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
                 Send message
             </button>
-
         </div>
     );
-
-    <div></div>
 };
 
 export default ChatBox;
