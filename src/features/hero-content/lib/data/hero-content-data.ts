@@ -22,7 +22,7 @@ export const fetchCurrentHeroContent = async (): Promise<HeroContent> => {
 
     const data = await res.json();
 
-    return data;
+    return data?.value;
   } catch (err) {
     throw new Error(
       err instanceof Error ? err.message : "Something went wrong",

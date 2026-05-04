@@ -5,7 +5,7 @@ import type { HeroContent } from "./lib/data/hero-content-data";
 import HeroContentCtaIcon from "./hero-content-cta-icon";
 
 const layoutClassName =
-  "grid h-full grid-cols-1 gap-6 overflow-hidden md:grid-cols-[minmax(0,1fr)_244px] md:grid-rows-[1fr_auto] md:items-stretch md:gap-x-6 md:gap-y-0";
+  "grid h-full grid-cols-1 gap-6 overflow-hidden md:grid-cols-[minmax(0,1fr)_244px] md:grid-rows-[1fr_auto] md:items-stretch md:gap-x-6 md:gap-y-0 relative";
 
 const contentColumnClassName = "min-w-0 md:col-start-1 md:row-start-1";
 
@@ -18,7 +18,7 @@ const studentImageWrapperClassName =
   "w-full max-w-[244px] justify-self-center self-end md:col-start-2 md:row-start-1 md:justify-self-end";
 
 const graphWrapperClassName =
-  "mb-8 w-full justify-self-center self-end md:col-span-2 md:row-start-2 xl:absolute";
+  "mb-8 w-full justify-self-center self-end md:col-span-2 md:row-start-2 3xl:absolute";
 
 type HeroContentCardProps = Readonly<{
   content: HeroContent;
