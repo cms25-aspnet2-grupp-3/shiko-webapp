@@ -12,6 +12,11 @@ export const metadata: Metadata = {
 export default function HelpCenterIndexPage() {
   return (
     <section>
+      <h1 className="text-5xl font-extrabold">Help Center</h1>
+      <p className="my-4 text-md text-gray-400">
+        Need some help? Want answer right away? Select your reference below for
+        our answers.
+      </p>
       <div className="bg-white px-8 py-6 rounded-xl">
         <h1 className="mt-3 text-3xl font-semibold text-gray-900">
           Need some help?
