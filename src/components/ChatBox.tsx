@@ -29,8 +29,8 @@ const ChatBox = () => {
 
     // HÄMTA MESSAGES
     useEffect(() => {
-        fetch(`${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`, {
-            headers: {
+  fetch("https://shikochatbox.azurewebsites.net/api/chat/conversation?user1=1&user2=2", {            
+    headers: {
                 "x-api-key": "min-super-secret-key"
             }
         })
