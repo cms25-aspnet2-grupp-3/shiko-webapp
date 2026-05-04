@@ -27,7 +27,7 @@ export const fetchHelpCenterArticles = async (): Promise<
 > => {
   try {
     const res = await fetch(HELP_CENTER_ENDPOINT, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
@@ -57,7 +57,7 @@ export const fetchHelpCenterArticleBySlug = async (
     const res = await fetch(
       `${HELP_CENTER_ENDPOINT}/slug/${slug}?includePage=true`,
       {
-        cache: "no-store",
+        next: { revalidate: 3600 },
       },
     );
 
