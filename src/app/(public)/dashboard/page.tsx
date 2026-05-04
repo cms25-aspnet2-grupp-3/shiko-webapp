@@ -6,6 +6,8 @@ import CourseInformationBox from "@/components/CourseInformationBox";
 import HeroContent from "@/features/hero-content/hero-content";
 import HeroContentSkeleton from "@/features/hero-content/hero-content-skeleton";
 
+import CommunityLinks from "@/components/CommunityLinks";
+
 type HomeProps = Readonly<{
   gapClassName?: string;
   roundedClassName?: string;
@@ -56,7 +58,7 @@ export default function Home({
         <section
           className={`${cardBaseClassName} lg:col-start-4 lg:col-span-1 lg:row-start-2 3xl:col-start-4`}
         >
-          Community
+          <CommunityLinks />
         </section>
       </div>
     </div>
