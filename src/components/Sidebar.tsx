@@ -12,7 +12,7 @@ export default function Sidebar() {
   const [general, setGeneral] = useState<MenuItem[]>([]);
 
   useEffect(() => {
-    fetch("https://localhost:4443/api/sidebar")
+    fetch("https://shikosidebar-mike.azurewebsites.net/api/sidebar")
       .then(res => res.json())
       .then(data => {
         setMenu(data.menu);
