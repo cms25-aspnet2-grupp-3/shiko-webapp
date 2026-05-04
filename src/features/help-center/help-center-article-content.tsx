@@ -11,12 +11,15 @@ type HelpCenterArticleContentProps = {
   }>;
 };
 
+function toSlug(parts: string[]) {
+  return decodeURIComponent(parts.join("/"));
+}
+
 export default async function HelpCenterArticleContent({
   params,
 }: HelpCenterArticleContentProps) {
   const { slug } = await params;
-  const normalizedSlug = slug.join("/");
-  const decodedSlug = decodeURIComponent(normalizedSlug);
+  const decodedSlug = toSlug(slug);
   let article: HelpCenterArticle | null;
 
   try {

@@ -14,6 +14,10 @@ type HelpCenterPageProps = {
   }>;
 };
 
+function toSlug(parts: string[]) {
+  return decodeURIComponent(parts.join("/"));
+}
+
 export async function generateStaticParams() {
   const articles = await fetchHelpCenterArticles();
 
@@ -26,8 +30,7 @@ export async function generateMetadata({
   params,
 }: HelpCenterPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const normalizedSlug = slug.join("/");
-  const decodedSlug = decodeURIComponent(normalizedSlug);
+  const decodedSlug = toSlug(slug);
   const article = await fetchHelpCenterArticleBySlug(decodedSlug);
 
   if (!article) {

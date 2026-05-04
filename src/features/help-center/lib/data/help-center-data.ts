@@ -17,35 +17,35 @@ type HelpCenterApiResponse<T> = {
   error: string | null;
 };
 
-const helpCenterEndpoint =
+const HELP_CENTER_ENDPOINT =
   "https://cms25-aspnet2-grupp3-help-center-api.azurewebsites.net/api/helpcenter";
+const HELP_CENTER_LIST_ERROR = "Could not load help center articles";
+const HELP_CENTER_ITEM_ERROR = "Could not load help center article";
 
 export const fetchHelpCenterArticles = async (): Promise<
   HelpCenterArticle[]
 > => {
   try {
-    const response = await fetch(helpCenterEndpoint, {
+    const res = await fetch(HELP_CENTER_ENDPOINT, {
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Request error (${response.status})`);
+    if (!res.ok) {
+      throw new Error(`Request error (${res.status})`);
     }
 
-    const data = (await response.json()) as HelpCenterApiResponse<
+    const data = (await res.json()) as HelpCenterApiResponse<
       HelpCenterArticle[]
     >;
 
     if (!data.succeeded || !data.value) {
-      throw new Error(data.error ?? "Could not load help center articles");
+      throw new Error(data.error ?? HELP_CENTER_LIST_ERROR);
     }
 
     return data.value;
   } catch (err) {
     throw new Error(
-      err instanceof Error
-        ? err.message
-        : "Could not load help center articles",
+      err instanceof Error ? err.message : HELP_CENTER_LIST_ERROR,
     );
   }
 };
@@ -54,32 +54,31 @@ export const fetchHelpCenterArticleBySlug = async (
   slug: string,
 ): Promise<HelpCenterArticle | null> => {
   try {
-    const response = await fetch(
-      `${helpCenterEndpoint}/slug/${slug}?includePage=true`,
+    const res = await fetch(
+      `${HELP_CENTER_ENDPOINT}/slug/${slug}?includePage=true`,
       {
         cache: "no-store",
       },
     );
 
-    if (response.status === 404) {
+    if (res.status === 404) {
       return null;
     }
 
-    if (!response.ok) {
-      throw new Error(`Request error (${response.status})`);
+    if (!res.ok) {
+      throw new Error(`Request error (${res.status})`);
     }
 
-    const data =
-      (await response.json()) as HelpCenterApiResponse<HelpCenterArticle>;
+    const data = (await res.json()) as HelpCenterApiResponse<HelpCenterArticle>;
 
     if (!data.succeeded) {
-      throw new Error(data.error ?? "Could not load help center article");
+      throw new Error(data.error ?? HELP_CENTER_ITEM_ERROR);
     }
 
     return data.value;
   } catch (err) {
     throw new Error(
-      err instanceof Error ? err.message : "Could not load help center article",
+      err instanceof Error ? err.message : HELP_CENTER_ITEM_ERROR,
     );
   }
 };
