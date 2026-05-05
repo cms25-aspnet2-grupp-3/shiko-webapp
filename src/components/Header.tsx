@@ -5,16 +5,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
-import {
-    getHeaderUser,
-    getHeaderMessages,
-    getHeaderNotifications,
-    searchHeader,
-    HeaderUser,
-    HeaderMessage,
-    HeaderNotification,
-    HeaderSearchResult
-} from "@/services/headerService";
+import { getHeaderUser, getHeaderMessages, getHeaderNotifications, searchHeader, HeaderUser,
+         HeaderMessage, HeaderNotification, HeaderSearchResult} from "@/services/headerService";
 
 export default function Header() {
     const router = useRouter();
