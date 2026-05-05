@@ -9,9 +9,11 @@ import {
     getHeaderUser,
     getHeaderMessages,
     getHeaderNotifications,
+    searchHeader,
     HeaderUser,
     HeaderMessage,
-    HeaderNotification
+    HeaderNotification,
+    HeaderSearchResult
 } from "@/services/headerService";
 
 export default function Header() {
@@ -22,6 +24,10 @@ export default function Header() {
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState("");
+
+    const [searchResults, setSearchResults] = useState<HeaderSearchResult[]>([]);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isSearchLoading, setIsSearchLoading] = useState(false);
 
     const [user, setUser] = useState<HeaderUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -74,6 +80,30 @@ export default function Header() {
 
         loadHeaderNotifications();
     }, []);
+    useEffect(() => {
+        const trimmedQuery = searchQuery.trim();
+
+        if (!trimmedQuery) {
+            return;
+        }
+
+        const timeoutId = setTimeout(async () => {
+            try {
+                setIsSearchLoading(true);
+                setIsSearchOpen(true);
+
+                const data = await searchHeader(trimmedQuery);
+                setSearchResults(data);
+            } catch (error) {
+                console.error("Failed to load search results:", error);
+                setSearchResults([]);
+            } finally {
+                setIsSearchLoading(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery]);
 
     const fullName = user
         ? `${user.fullName}`
@@ -117,31 +147,92 @@ export default function Header() {
 
     return (
         <header className={styles.header}>
-            <form className={styles["search-bar"]} onSubmit={handleSearch}>
-                <button type="submit" className={styles["submit"]}>
-                    <Image
-                        src="/icons/icon-search.svg"
-                        alt="Search"
-                        width={16}
-                        height={16}
-                    />
-                </button>
+            <div className="relative">
+                <form className={styles["search-bar"]} onSubmit={handleSearch}>
+                    <button type="submit" className={styles["submit"]}>
+                        <Image
+                            src="/icons/icon-search.svg"
+                            alt="Search"
+                            width={16}
+                            height={16}
+                        />
+                    </button>
 
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                />
-            </form>
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(event) => {
+                            const value = event.target.value;
+
+                            setSearchQuery(value);
+
+                            if (!value.trim()) {
+                                setSearchResults([]);
+                                setIsSearchOpen(false);
+                            }
+                        }}
+                        onFocus={() => {
+                            if (searchQuery.trim()) {
+                                setIsSearchOpen(true);
+                            }
+                        }}
+                    />
+                </form>
+
+                <div
+                    className={`absolute left-0 top-14 z-50 w-full min-w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5 transform transition-all duration-200 ease-out ${isSearchOpen
+                        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                        }`}
+                >
+                    <div className="p-4">
+                        <h3 className="text-sm font-semibold text-slate-900">
+                            Search results
+                        </h3>
+
+                        <div className="mt-3 space-y-2">
+                            {isSearchLoading ? (
+                                <p className="text-sm text-slate-500">
+                                    Searching...
+                                </p>
+                            ) : searchResults.length === 0 ? (
+                                <p className="text-sm text-slate-500">
+                                    No results found.
+                                </p>
+                            ) : (
+                                searchResults.map((result) => (
+                                    <Link key={`${result.type}-${result.id}`} href={result.url}
+                                        onClick={() => {
+                                            setIsSearchOpen(false);
+                                            setSearchQuery("");
+                                        }}
+                                        className="block rounded-xl p-3 transition hover:bg-[#F9CCC8]">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <div>
+                                                <p className="text-sm font-medium text-slate-900">
+                                                    {result.title}
+                                                </p>
+
+                                                <p className="mt-1 text-xs uppercase tracking-wide text-slate-500">
+                                                    {result.type}
+                                                </p>
+                                            </div>
+
+                                            <Image src="/icons/ArrowRight.svg" alt="Open" width={11} height={11}
+                                            />
+                                        </div>
+                                    </Link>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div className={styles["right-section"]}>
                 <div className="relative">
-                    <button
-                        type="button"
-                        className={styles.button}
-                        onClick={toggleMessages}
-                        aria-label="Open messages"
+                    <button type="button" className={styles.button} onClick={toggleMessages} aria-label="Open messages"
                     >
                         <Image
                             src="/icons/icon.svg"
@@ -175,20 +266,10 @@ export default function Header() {
                                     </p>
                                 ) : (
                                     messages.map((message) => (
-                                        <Link
-                                            key={message.id}
-                                            href={`/${message.url}`}
-                                            onClick={() => setIsMessagesOpen(false)}
+                                        <Link key={message.id} href={`/${message.url}`} onClick={() => setIsMessagesOpen(false)}
                                             className={`flex items-center gap-3 rounded-xl p-3 transition hover:bg-[#F9CCC8] ${message.isRead ? "bg-white" : "bg-slate-50"
-                                                }`}
-                                        >
-                                            <Image
-                                                src={message.senderImageUrl}
-                                                alt={message.senderName}
-                                                width={40}
-                                                height={40}
-                                                className="rounded-full"
-                                            />
+                                                }`}>
+                                            <Image src={message.senderImageUrl} alt={message.senderName} width={40} height={40} className="rounded-full" />
 
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex items-center justify-between gap-2">
@@ -210,11 +291,8 @@ export default function Header() {
                                 )}
                             </div>
 
-                            <Link
-                                href="/messages"
-                                onClick={() => setIsMessagesOpen(false)}
-                                className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]"
-                            >
+                            <Link href="/messages" onClick={() => setIsMessagesOpen(false)}
+                                className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]">
                                 View all messages
                             </Link>
                         </div>
@@ -224,18 +302,8 @@ export default function Header() {
                 <div className={styles.divider}></div>
 
                 <div className="relative">
-                    <button
-                        type="button"
-                        className={styles.button}
-                        onClick={toggleNotifications}
-                        aria-label="Open notifications"
-                    >
-                        <Image
-                            src="/icons/notification.svg"
-                            alt="Notification"
-                            width={15}
-                            height={18}
-                        />
+                    <button type="button" className={styles.button} onClick={toggleNotifications} aria-label="Open notifications">
+                        <Image src="/icons/notification.svg" alt="Notification" width={15} height={18} />
                     </button>
 
                     <div
@@ -291,11 +359,8 @@ export default function Header() {
                                 )}
                             </div>
 
-                            <Link
-                                href="/notifications"
-                                onClick={() => setIsNotificationsOpen(false)}
-                                className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]"
-                            >
+                            <Link href="/notifications" onClick={() => setIsNotificationsOpen(false)}
+                                className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]">
                                 View all notifications
                             </Link>
                         </div>
@@ -318,12 +383,7 @@ export default function Header() {
                         }}
                     >
                         <div className={styles["user-image"]}>
-                            <Image
-                                src={profileImageUrl}
-                                alt="Profile"
-                                width={60}
-                                height={60}
-                            />
+                            <Image src={profileImageUrl} alt="Profile" width={60} height={60} />
                         </div>
 
                         <div className={styles["user-info"]}>
@@ -347,13 +407,7 @@ export default function Header() {
                     >
                         <div className="p-5">
                             <div className="flex items-center gap-4">
-                                <Image
-                                    src={profileImageUrl}
-                                    alt="Profile"
-                                    width={52}
-                                    height={52}
-                                    className="rounded-full"
-                                />
+                                <Image src={profileImageUrl} alt="Profile" width={52} height={52} className="rounded-full" />
 
                                 <div>
                                     <h3 className="text-sm font-semibold text-slate-900">
@@ -367,40 +421,27 @@ export default function Header() {
                             </div>
 
                             <div className="mt-5 space-y-2">
-                                <Link
-                                    href="/profile"
-                                    onClick={() => setIsProfileModalOpen(false)}
-                                    type="button"
-                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]"
-                                >
+                                <Link href="/profile" onClick={() => setIsProfileModalOpen(false)} type="button"
+                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]">
                                     Show Profile
                                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                                 </Link>
 
-                                <Link
-                                    href="/settings"
-                                    onClick={() => setIsProfileModalOpen(false)}
-                                    type="button"
-                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]"
-                                >
+                                <Link href="/settings" onClick={() => setIsProfileModalOpen(false)} type="button"
+                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]">
                                     Settings
                                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                                 </Link>
 
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]"
-                                >
+                                <button type="button"
+                                    className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]">
                                     Log Out
                                     <Image src="/icons/ArrowRight.svg" alt="Arrow" width={11} height={11} />
                                 </button>
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={() => setIsProfileModalOpen(false)}
-                                className="mt-4 w-full rounded-xl bg-[#E9ECF3] cursor-pointer px-3 py-2 transition hover:bg-[#BAC4D9]"
-                            >
+                            <button type="button" onClick={() => setIsProfileModalOpen(false)}
+                                className="mt-4 w-full rounded-xl bg-[#E9ECF3] cursor-pointer px-3 py-2 transition hover:bg-[#BAC4D9]">
                                 Close
                             </button>
                         </div>

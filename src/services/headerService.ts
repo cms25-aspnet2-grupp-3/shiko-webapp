@@ -22,6 +22,13 @@ export type HeaderNotification = {
     url: string;
 };
 
+export type HeaderSearchResult = {
+    id: string;
+    title: string;
+    type: string;
+    url: string;
+};
+
 const API_URL = process.env.NEXT_PUBLIC_HEADER_API_URL;
 
 function getApiUrl() {
@@ -72,6 +79,24 @@ export async function getHeaderNotifications(): Promise<HeaderNotification[]> {
 
     if (!response.ok) {
         throw new Error(`Could not fetch header notifications. Status: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+export async function searchHeader(query: string): Promise<HeaderSearchResult[]> {
+    const response = await fetch(
+        `${getApiUrl()}/api/search?query=${encodeURIComponent(query)}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Could not fetch search results. Status: ${response.status}`);
     }
 
     return response.json();
