@@ -29,6 +29,7 @@ export default function NotFound() {
                 console.error("Kunde inte ansluta till API:et (Nätverksfel):", error);
             }
         };
+        
 
         logNotFound();
     }, []);
