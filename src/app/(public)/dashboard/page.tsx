@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import ChatBox from "@/components/ChatBox";
 import CourseInformationBox from "@/components/CourseInformationBox";
 
-// Vi kan behålla dessa imports, de gör ingen skada om de inte används
 import HeroContent from "@/features/hero-content/hero-content";
 import HeroContentSkeleton from "@/features/hero-content/hero-content-skeleton";
 
