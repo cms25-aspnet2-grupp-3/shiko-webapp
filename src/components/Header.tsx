@@ -105,7 +105,7 @@ export default function Header() {
 
     const profileImageUrl =
         user?.profileImageUrl ??
-        "https://shikoimagestoragegrp3.blob.core.windows.net/images/profile-sample.png";
+        "https://shikoimagestoragegrp3.blob.core.windows.net/images/6b7db13d-8bb2-4c22-a1f3-06155c631382-profile-sample.png";
 
     function openProfileModal() {
         setIsProfileModalOpen(true);
