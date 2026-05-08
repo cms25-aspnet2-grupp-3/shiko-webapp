@@ -1,0 +1,1 @@
+export const liveChatHubUrl = "https://localhost:7298/hubs/live/chat";
