@@ -16,7 +16,7 @@ type HomeProps = Readonly<{
   cardBackgroundClassName?: string;
 }>;
 
-export default function Home({
+export default async function Home({
   gapClassName = "gap-8",
   roundedClassName = "rounded",
   cardRoundedClassName = "rounded-2xl",
