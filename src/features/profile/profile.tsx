@@ -1,5 +1,6 @@
 import { fetchProfile } from "./lib/data/profile-data";
 import ProfileCard from "./profile-card";
+import ProfileForm from "./profile-form";
 
 export default async function Profile() {
   const profile = await fetchProfile();
@@ -21,6 +22,7 @@ export default async function Profile() {
 
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <ProfileCard profile={profile} />
+        <ProfileForm profile={profile} />
       </div>
     </section>
   );

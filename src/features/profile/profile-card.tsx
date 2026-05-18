@@ -45,7 +45,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
           <h3 className="font-semibold text-gray-800">Skills</h3>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            {profile.skills.map((skill) => (
+            {(profile.skills ?? []).map((skill) => (
               <span
                 key={skill}
                 className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-500"

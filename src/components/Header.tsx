@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import styles from "./Header.module.css";
@@ -29,6 +29,8 @@ export default function Header() {
 
     const [isMessagesLoading, setIsMessagesLoading] = useState(true);
     const [isNotificationsLoading, setIsNotificationsLoading] = useState(true);
+
+    const headerRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
         async function loadHeaderUser() {
@@ -137,6 +139,13 @@ export default function Header() {
         router.push(`/search?query=${encodeURIComponent(trimmedQuery)}`);
     }
 
+    function closeAllDropdowns() {
+        setIsMessagesOpen(false);
+        setIsNotificationsOpen(false);
+        setIsProfileModalOpen(false);
+        setIsSearchOpen(false);
+    }
+
     return (
         <header className={styles.header}>
             <div className="relative">
@@ -195,10 +204,7 @@ export default function Header() {
                             ) : (
                                 searchResults.map((result) => (
                                     <Link key={`${result.type}-${result.id}`} href={result.url}
-                                        onClick={() => {
-                                            setIsSearchOpen(false);
-                                            setSearchQuery("");
-                                        }}
+                                        onClick={closeAllDropdowns}
                                         className="block rounded-xl p-3 transition hover:bg-[#F9CCC8]">
                                         <div className="flex items-center justify-between gap-3">
                                             <div>
@@ -258,7 +264,7 @@ export default function Header() {
                                     </p>
                                 ) : (
                                     messages.map((message) => (
-                                        <Link key={message.id} href={`/${message.url}`} onClick={() => setIsMessagesOpen(false)}
+                                        <Link key={message.id} href={`/${message.url}`} onClick={closeAllDropdowns}
                                             className={`flex items-center gap-3 rounded-xl p-3 transition hover:bg-[#F9CCC8] ${message.isRead ? "bg-white" : "bg-slate-50"
                                                 }`}>
                                             <Image src={message.senderImageUrl} alt={message.senderName} width={40} height={40} className="rounded-full" />

@@ -3,14 +3,15 @@ export type Profile = {
   firstName: string;
   lastName: string;
   email: string;
-  phoneNumber?: string;
-  bio?: string;
+  phoneNumber: string;
+  bio: string;
   profileImageUrl?: string;
   profileUrl: string;
   role?: string;
   skills?: string[];
   achievements?: string[];
   BgImageUrl?: string;
+  profileIcon?: string;
 };
 
 const AchievementBadges: Record<string, string> = {
@@ -21,7 +22,13 @@ const AchievementBadges: Record<string, string> = {
   badge5: "https://shikoimagestoragegrp3.blob.core.windows.net/images/badge_5-361aaa32-ae51-45bf-9eda-5d079876dae6.png",
 };
 
+const ProfileIcon: Record<string, string> = {
+  profileIcon: "https://shikoimagestoragegrp3.blob.core.windows.net/images/Upload-Profile-Icon.png-525167a1-3bb6-4b2d-b21c-0acc6cc41f5a"
+};
+
 const API_URL = process.env.NEXT_PUBLIC_PROFILE_API_URL;
+
+
 
 export async function fetchProfile(): Promise<Profile> {
   const response = await fetch(`${API_URL}/api/profile`, {
@@ -39,7 +46,8 @@ export async function fetchProfile(): Promise<Profile> {
     firstName: profile.firstName,
     lastName: profile.lastName,
     email: profile.email ?? "Test@example.com",
-    bio: profile.bio,
+    phoneNumber: profile.phoneNumber ?? "+1 (555) 123-4567",
+    bio: profile.bio ?? "No bio available.",
     profileImageUrl: profile.profileImageUrl ?? "https://shikoimagestoragegrp3.blob.core.windows.net/images/0e7c8b1c-9a5d-4f1b-9c8e-2a3b5d6f7e8a-profile.png",
     profileUrl: profile.profileUrl,
     role: profile.role ?? "Student",
@@ -47,5 +55,6 @@ export async function fetchProfile(): Promise<Profile> {
     achievements: profile.achievements ?? [AchievementBadges.badge1, AchievementBadges.badge2, AchievementBadges.badge3, AchievementBadges.badge4, AchievementBadges.badge5],
     BgImageUrl: profile.BgImageUrl ??
       "https://shikoimagestoragegrp3.blob.core.windows.net/images/c4f12d58-5e60-4770-928b-79d54b0903d8-Rectangle-profile.png",
+    profileIcon: profile.profileIcon ?? ProfileIcon.profileIcon,
   }
 }
