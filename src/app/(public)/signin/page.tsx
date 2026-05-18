@@ -3,8 +3,14 @@ import { signIn, auth, providerMap } from "../../../../auth";
 import { AuthError } from "next-auth";
 import SubmitButton from "@/components/auth/SubmitButton";
 
-const SIGNIN_ERROR_URL = "/error";
+const SIGNIN_ERROR_URL = "/signin";
 const DASHBOARD_URL = "/dashboard";
+
+function getSignInErrorMessage(error?: string) {
+  if (!error) return null;
+  if (error === "CredentialsSignin") return "Invalid email or password.";
+  return "Sign in failed. Please try again.";
+}
 
 async function handleSignInAction(action: () => Promise<void>) {
   "use server";
@@ -20,7 +26,7 @@ async function handleSignInAction(action: () => Promise<void>) {
 }
 
 export default async function SignInPage(props: {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const session = await auth();
   if (session?.user) {
@@ -29,6 +35,7 @@ export default async function SignInPage(props: {
 
   const searchParams = await props.searchParams;
   const callbackUrl = searchParams?.callbackUrl ?? DASHBOARD_URL;
+  const errorMessage = getSignInErrorMessage(searchParams?.error);
 
   return (
     <div className="mx-auto grid min-h-screen w-full max-w-[1600px] md:grid-cols-2">
@@ -47,6 +54,12 @@ export default async function SignInPage(props: {
               Please enter your password to log in to your account.
             </p>
           </div>
+
+          {errorMessage && (
+            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {errorMessage}
+            </p>
+          )}
 
           <form
             className="space-y-4"
