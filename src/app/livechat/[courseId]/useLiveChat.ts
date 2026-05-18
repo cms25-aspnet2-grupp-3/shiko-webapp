@@ -6,34 +6,34 @@ import { getCurrentUser } from "./getCurrentUser";
 import { liveChatHubUrl } from "./liveChatConstants";
 import { useEffect, useState, useRef, FormEvent } from "react";
 
-export function useLiveChat(chatId: string) {
+export function useLiveChat(chatId: number) {
     const [isConnected, setIsConnected] = useState(false);
-    
-    
     const [currentUser] = useState(() => getCurrentUser());
-    
     const [messages, setMessages] = useState<chatMessage[]>([]);
     const [message, setMessage] = useState("");
 
     const connectionRef = useRef<signalR.HubConnection | null>(null);
 
     useEffect(() => {
+        if (!chatId) return;
+
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(liveChatHubUrl)
+            .withUrl(liveChatHubUrl, {
+                withCredentials: true,
+                skipNegotiation: false, 
+                transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
+            })
             .withAutomaticReconnect()
             .build();
 
-        connection.on("LoadMessages", (loadedMessages: chatMessage[]) => {
-            setMessages(loadedMessages);
+        connection.on("LoadMessages", (loaded: chatMessage[]) => {
+            setMessages(loaded);
         });
 
-        connection.on("ReceiveMessage", (receivedMessage: chatMessage) => {
-            setMessages(currentMessages => {
-                const exists = currentMessages.some(
-                    existingMessage => existingMessage.messageId === receivedMessage.messageId
-                );
-                if (exists) return currentMessages;
-                return [...currentMessages, receivedMessage];
+        connection.on("ReceiveMessage", (msg: chatMessage) => {
+            setMessages(prev => {
+                if (prev.some(m => m.messageId === msg.messageId)) return prev;
+                return [...prev, msg];
             });
         });
 
@@ -42,67 +42,44 @@ export function useLiveChat(chatId: string) {
             setIsConnected(false);
         });
 
-        connection.onclose(() => setIsConnected(false));
-        connection.onreconnecting(() => setIsConnected(false));
-
-        async function startConnection() {
+        const start = async () => {
             try {
                 await connection.start();
-                connectionRef.current = connection;
+                console.log("SignalR Connected!");
                 await connection.invoke("JoinChat", chatId);
                 setIsConnected(true);
-            } catch (error) {
-                console.error("Failed to connect to live chat:", error);
-                setIsConnected(false);
+                connectionRef.current = connection;
+            } catch (err) {
+                console.error("SignalR Connection Error: ", err);
+                setTimeout(start, 5000); 
             }
-        }
+        };
 
-        startConnection();
+        start();
 
         return () => {
-            if (connection) {
+            if (connection.state === signalR.HubConnectionState.Connected) {
+                connection.invoke("LeaveChat", chatId).catch(console.error);
                 connection.stop();
             }
         };
-    }, [chatId]); 
+    }, [chatId]);
 
-    function handleMessageChange(value: string) {
-        setMessage(value);
-    }
+    const handleMessageChange = (value: string) => setMessage(value);
 
-    async function sendMessage(event: FormEvent<HTMLFormElement>) {
+    const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const trimmedMessage = message.trim();
-        if (!trimmedMessage) return;
-
-        if (!connectionRef.current || !isConnected) {
-            setMessages(current => [
-                ...current,
-                {
-                    messageId: crypto.randomUUID(),
-                    chatId,
-                    user: "system",
-                    text: "Not connected to live chat server",
-                    createdAtUTc: new Date().toISOString()
-                }
-            ]);
-            return;
-        }
+        const trimmed = message.trim();
+        if (!trimmed || !connectionRef.current || !isConnected) return;
 
         try {
-            await connectionRef.current.invoke("SendMessage", chatId, currentUser, trimmedMessage, null);
+            await connectionRef.current.invoke("SendMessage", chatId, currentUser, trimmed, null);
             setMessage("");
         } catch (err) {
-            console.error("Error sending message:", err);
+            console.error("SendMessage error:", err);
         }
-    }
-
-    return {
-        currentUser,
-        isConnected,
-        messages,
-        message,
-        handleMessageChange,
-        sendMessage
     };
+
+    return { currentUser, isConnected, messages, message, handleMessageChange, sendMessage };
+    
 }

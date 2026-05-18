@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const API_MONITOR = "http://localhost:5276";
+const API_MONITOR = process.env.NEXT_PUBLIC_MONITOR_API ?? "";
+const API_KEY = process.env.NEXT_PUBLIC_MONITOR_API_KEY ?? "";
 
 export default function NotFound() {
 
@@ -17,7 +18,7 @@ export default function NotFound() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "x-api-key": "aZ9kL27mNqP5xR92vTzB1_Lp90sQwE"
+                        "x-api-key": API_KEY
                     },
                     body: JSON.stringify({
                         invalidUrl: window.location.href,
@@ -34,7 +35,6 @@ export default function NotFound() {
                 console.error("Kunde inte ansluta till API:", error);
             }
         };
-        
 
         logNotFound();
     }, []);

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Message = {
     id: number;
@@ -18,7 +19,8 @@ type User = {
     hasUnread: boolean;
 };
 
-const API_CHAT = "https://shikochatbox.azurewebsites.net";
+const API_CHAT = process.env.NEXT_PUBLIC_CHAT_API ?? "";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
 const ChatBox = () => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -31,7 +33,9 @@ const ChatBox = () => {
                 const res = await fetch(
                     `${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`,
                     {
-                        headers: { "x-api-key": "min-super-secret-key" }
+                        headers: {
+                            "x-api-key": API_KEY
+                        }
                     }
                 );
 
@@ -50,6 +54,8 @@ const ChatBox = () => {
         { id: 2, name: "User 2", avatar: "https://i.pravatar.cc/150?u=12", hasUnread: true },
         { id: 3, name: "User 3", avatar: "https://i.pravatar.cc/150?u=13", hasUnread: false },
         { id: 4, name: "User 4", avatar: "https://i.pravatar.cc/150?u=14", hasUnread: false },
+        { id: 5, name: "User 5", avatar: "https://i.pravatar.cc/150?u=15", hasUnread: false },
+        { id: 6, name: "User 6", avatar: "https://i.pravatar.cc/150?u=16", hasUnread: false },
     ];
 
     const sendMessage = async () => {
@@ -60,7 +66,7 @@ const ChatBox = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-api-key": "min-super-secret-key"
+                    "x-api-key": API_KEY
                 },
                 body: JSON.stringify({
                     senderId: 1,
@@ -74,7 +80,9 @@ const ChatBox = () => {
             const res = await fetch(
                 `${API_CHAT}/api/chat/conversation?user1=1&user2=${selectedUser}`,
                 {
-                    headers: { "x-api-key": "min-super-secret-key" }
+                    headers: {
+                        "x-api-key": API_KEY
+                    }
                 }
             );
 
@@ -87,15 +95,15 @@ const ChatBox = () => {
     };
 
     return (
-        <div className="w-full max-w-[320px] bg-white rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] font-sans border border-gray-100">
+        <div className="">
 
             <div className="mb-4">
                 <h2 className="text-2xl font-bold text-[#1D2939]">Chats</h2>
                 <p className="text-gray-400 text-sm">2 unread messages</p>
             </div>
 
-            <div className="flex flex-col items-center mb-6">
-                <div className="flex gap-3 mb-3 overflow-hidden">
+            <div className="flex flex-col items-center mb-2">
+                <div className="flex gap-2 mb-2 overflow-hidden">
                     {chatUsers.map((user) => (
                         <div
                             key={user.id}
@@ -119,50 +127,23 @@ const ChatBox = () => {
                             </div>
 
                             {user.hasUnread && (
-                                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#F04438] border-2 border-white rounded-full"></span>
+                                <span className="absolute top-0 right-0 w-2 h-2 bg-[#F04438] border-2 border-white rounded-full"></span>
                             )}
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="flex items-center justify-between py-4 border-t border-gray-50 mb-2">
-                <span className="text-sm font-bold text-[#1D2939]">All Messages</span>
+            <Link
+                href="/livechat/1"
+                className="flex items-center justify-between py-3 border-t border-gray-50 mb-2 cursor-pointer"
+            >
+                <span className="text-sm font-bold text-[#1D2939]">
+                    All Messages
+                </span>
                 <span className="text-gray-400">→</span>
-            </div>
+            </Link>
 
-            <div className="space-y-3 mb-4 pr-2">
-                {messages.map((msg) => (
-                    <div
-                        key={msg.id}
-                        className={`text-[11px] p-2 rounded-xl max-w-[80%] ${
-                            msg.senderId === 1
-                                ? "bg-[#1D2939] text-white ml-auto"
-                                : "bg-gray-100 text-gray-700"
-                        }`}
-                    >
-                        {msg.content}
-                    </div>
-                ))}
-            </div>
-
-            <div className="relative flex items-center gap-2 mt-auto">
-                <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                    placeholder="Type a message..."
-                    className="w-full bg-[#F9FAFB] rounded-full px-4 py-2 text-xs text-gray-500 focus:outline-none border border-transparent focus:border-gray-200"
-                />
-
-                <button
-                    onClick={sendMessage}
-                    className="bg-[#1D2939] text-white text-[10px] font-bold px-3 py-2 rounded-lg transition-colors hover:bg-black"
-                >
-                    Send
-                </button>
-            </div>
         </div>
     );
 };

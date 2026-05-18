@@ -6,25 +6,29 @@ import LiveChatMessageList from "./LiveChatMessageList";
 import { useLiveChat } from "./useLiveChat";
 
 type LiveChatProps = {
-    chatId: string;
+    chatId: string | number;
 };
 
 export default function LiveChat({ chatId }: LiveChatProps) {
-        const {
-            currentUser,
-            isConnected,
-            messages,
-            message,
-            handleMessageChange,
-            sendMessage,
-    } =     useLiveChat(chatId);
+    const {
+        currentUser,
+        isConnected,
+        messages,
+        message,
+        handleMessageChange,
+        sendMessage,
+    } = useLiveChat(Number(chatId));
 
     return (
         <section>
             <LiveChatHeader isConnected={isConnected} />
             <LiveChatMessageList messages={messages} currentUser={currentUser} />
-            <LiveChatInput message={message} isConnected={isConnected} onMessageChange={handleMessageChange} onSendMessage={sendMessage} />
+            <LiveChatInput 
+                message={message} 
+                isConnected={isConnected} 
+                onMessageChange={handleMessageChange} 
+                onSendMessage={sendMessage} 
+            />
         </section>
-    )
-
+    );
 }
