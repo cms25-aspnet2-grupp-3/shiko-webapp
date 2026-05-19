@@ -1,6 +1,8 @@
 import { fetchProfile } from "./lib/data/profile-data";
 import ProfileCard from "./profile-card";
 import ProfileForm from "./profile-form";
+import Link from "next/link";
+
 
 export default async function Profile() {
   const profile = await fetchProfile();
@@ -10,13 +12,19 @@ export default async function Profile() {
       <div>
         <h1 className="text-2xl font-semibold text-gray-800">Profile</h1>
 
-        <nav className="mt-5 flex gap-8 text-sm">
-          <button className="rounded-md bg-gray-900 px-5 py-3 text-white">
+        <nav className="mt-5 flex gap-4 text-sm font-medium">
+          <Link href="/profile/general" className="rounded-md bg-gray-700 px-5 py-3 text-white hover:bg-gray-600">
             General
-          </button>
-          <button className="text-gray-400">Team</button>
-          <button className="text-gray-400">Password</button>
-          <button className="text-gray-400">Notification</button>
+          </Link>
+          <Link href="/profile/team" className="text-gray-400 px-5 py-3 hover:text-gray-600 hover:bg-gray-700 hover:text-white rounded-md">
+            Team
+          </Link>
+          <Link href="/profile/password" className="text-gray-400 px-5 py-3 hover:text-gray-600 hover:bg-gray-700 hover:text-white rounded-md">
+            Password
+          </Link>
+          <Link href="/profile/notifications" className="text-gray-400 px-5 py-3 hover:text-gray-600 hover:bg-gray-700 hover:text-white rounded-md">
+            Notification
+          </Link>
         </nav>
       </div>
 
