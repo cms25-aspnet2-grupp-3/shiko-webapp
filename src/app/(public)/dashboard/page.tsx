@@ -34,8 +34,6 @@ export default function Home({
           <CourseInformationBox />
         </div>
         
-        {/* JAG HAR KOMMENTERAT BORT SEKTIONEN NEDAN SOM KRASCHADE SIDAN */}
-        {/* 
         <section
           className={`${cardRoundedClassName} ${cardBackgroundClassName} h-full overflow-hidden p-8 pb-0`}
         >
@@ -43,7 +41,7 @@ export default function Home({
             <HeroContent />
           </Suspense>
         </section> 
-        */}
+        
       </div>
 
       <div

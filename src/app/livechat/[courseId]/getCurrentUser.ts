@@ -1,3 +1,5 @@
+"use client";
+
 export function getCurrentUser() {
     if (typeof window === "undefined") {
         return "You"; 

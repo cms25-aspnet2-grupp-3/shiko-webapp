@@ -1,3 +1,5 @@
+"use client";
+
 import { chatMessage } from "./chatMessage";
 import LiveChatMessageItem from "./LiveChatMessageItem";
 

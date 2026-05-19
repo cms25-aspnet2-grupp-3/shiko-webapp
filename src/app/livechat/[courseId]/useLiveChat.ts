@@ -14,6 +14,8 @@ export function useLiveChat(chatId: number) {
 
     const connectionRef = useRef<signalR.HubConnection | null>(null);
 
+    console.log(liveChatHubUrl);
+
     useEffect(() => {
         if (!chatId) return;
 

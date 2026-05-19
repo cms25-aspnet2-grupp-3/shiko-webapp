@@ -1,3 +1,5 @@
+"use client";
+
 import { chatMessage } from "./chatMessage";
 
 type LiveChatMessageItemProps = {
