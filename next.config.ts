@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "shikoimagestoragegrp3.blob.core.windows.net",
         pathname: "/images/**",
       },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+        pathname: "/**",
+      },
     ],
   },
 };
