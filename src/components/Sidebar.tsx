@@ -1,28 +1,20 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
 
-type MenuItem = {
+export type MenuItem = {
   title: string;
   path: string;
   icon: string;
 };
 
-export default function Sidebar() {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
-  const [general, setGeneral] = useState<MenuItem[]>([]);
+type SidebarProps = {
+  menu: MenuItem[];
+  general: MenuItem[];
+};
 
-  useEffect(() => {
-    fetch("https://shikosidebar-mike.azurewebsites.net/api/sidebar")
-      .then(res => res.json())
-      .then(data => {
-        setMenu(data.menu);
-        setGeneral(data.general);
-      });
-  }, []);
-
+export default async function Sidebar({ menu, general }: SidebarProps) {
   return (
     <div className="flex flex-col gap-6">
-
       {/* MENU */}
       <div className="text-sm text-gray-400">MENU</div>
 
@@ -40,16 +32,43 @@ export default function Sidebar() {
       {/* GENERAL */}
       <div className="text-sm text-gray-400 mt-4">GENERAL</div>
 
-      {general.map((item) => (
-        <Link key={item.title} href={item.path}>
-          <div className="group flex items-center gap-3 p-2 rounded-2xl cursor-pointer transition hover:bg-[#F9CCCB]">
-            <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center transition group-hover:bg-[#ED5735]">
-              <img src={item.icon} className="w-5 h-5" alt={item.title} />
-            </span>
-            <span className="text-gray-800">{item.title}</span>
-          </div>
-        </Link>
-      ))}
+      {general.map((item) => {
+        const isLogout =
+          item.title.replace(/\s/g, "").toLowerCase() === "logout" ||
+          item.path.toLowerCase().includes("logout");
+
+        return isLogout ? (
+          <button
+            key={item.title}
+            type="button"
+            onClick={async (event) => {
+              event.preventDefault();
+              await signOut();
+            }}
+            className="w-full text-left"
+          >
+            <div className="group flex items-center gap-3 p-2 rounded-2xl cursor-pointer transition hover:bg-[#F9CCCB]">
+              <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center transition group-hover:bg-[#ED5735]">
+                <img
+                  src={item.icon}
+                  className="w-5 h-5 brightness-0"
+                  alt={item.title}
+                />
+              </span>
+              <span className="text-gray-800">{item.title}</span>
+            </div>
+          </button>
+        ) : (
+          <Link key={item.title} href={item.path}>
+            <div className="group flex items-center gap-3 p-2 rounded-2xl cursor-pointer transition hover:bg-[#F9CCCB]">
+              <span className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center transition group-hover:bg-[#ED5735]">
+                <img src={item.icon} className="w-5 h-5" alt={item.title} />
+              </span>
+              <span className="text-gray-800">{item.title}</span>
+            </div>
+          </Link>
+        );
+      })}
 
       {/* DOWNLOAD CARD */}
       <div
@@ -64,7 +83,6 @@ export default function Sidebar() {
           Download App
         </button>
       </div>
-
     </div>
   );
 }

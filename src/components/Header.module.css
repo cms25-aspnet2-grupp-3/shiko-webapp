@@ -75,6 +75,7 @@
 }
 
 .user-profile {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 1rem;
