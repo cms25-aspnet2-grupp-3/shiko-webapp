@@ -12,7 +12,7 @@ type SidebarProps = {
   general: MenuItem[];
 };
 
-export default async function Sidebar({ menu, general }: SidebarProps) {
+export default function Sidebar({ menu, general }: SidebarProps) {
   return (
     <div className="flex flex-col gap-6">
       {/* MENU */}

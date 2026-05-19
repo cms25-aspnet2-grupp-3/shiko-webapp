@@ -33,13 +33,15 @@ export default function Home({
         <div className="h-full">
           <CourseInformationBox />
         </div>
+        
         <section
           className={`${cardRoundedClassName} ${cardBackgroundClassName} h-full overflow-hidden p-8 pb-0`}
         >
           <Suspense fallback={<HeroContentSkeleton />}>
             <HeroContent />
           </Suspense>
-        </section>
+        </section> 
+        
       </div>
 
       <div
