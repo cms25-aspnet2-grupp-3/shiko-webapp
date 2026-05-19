@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const API_MONITOR = "https://localhost:5276";
+const API_MONITOR = process.env.NEXT_PUBLIC_MONITOR_API ?? "";
+const API_KEY = process.env.NEXT_PUBLIC_MONITOR_API_KEY ?? "";
 
 export default function NotFound() {
 
@@ -17,7 +18,7 @@ export default function NotFound() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "x-api-key": "aZ9kL27mNqP5xR92sQwE"
+                        "x-api-key": API_KEY
                     },
                     body: JSON.stringify({
                         invalidUrl: window.location.href,
@@ -62,7 +63,7 @@ export default function NotFound() {
             </p>
 
             <Link
-                href="/"
+                href="/dashboard"
                 className="bg-primary hover:opacity-90 text-white font-semibold py-3 px-8 rounded-md transition-all duration-200 flex items-center gap-2"
             >
                 Back to Home <span>↗</span>
