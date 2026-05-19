@@ -1,9 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import TopBar from "@/components/TopBar";
+import { auth } from "@/auth";
+import AppShellClient from "@/features/layouts/AppShellClient";
+import type { MenuItem } from "@/components/Sidebar";
 
 type AppShellLayoutProps = Readonly<{
   children: React.ReactNode;
@@ -11,52 +8,50 @@ type AppShellLayoutProps = Readonly<{
   outerPaddingClassName?: string;
 }>;
 
-export default function AppShellLayout({
+type SidebarResponse = {
+  menu?: MenuItem[];
+  general?: MenuItem[];
+};
+
+async function getSidebarLinks(): Promise<{ menu: MenuItem[]; general: MenuItem[] }> {
+  try {
+    const response = await fetch(
+      "https://shikosidebar-mike.azurewebsites.net/api/sidebar",
+      {
+        cache: "no-store",
+      },
+    );
+    if (!response.ok) {
+      return { menu: [], general: [] };
+    }
+
+    const data = (await response.json()) as SidebarResponse;
+    return {
+      menu: Array.isArray(data.menu) ? data.menu : [],
+      general: Array.isArray(data.general) ? data.general : [],
+    };
+  } catch {
+    return { menu: [], general: [] };
+  }
+}
+
+export default async function AppShellLayout({
   children,
   gapClassName = "gap-8",
   outerPaddingClassName = "p-4",
 }: AppShellLayoutProps) {
-
-  const [open, setOpen] = useState(true);
+  const session = await auth();
+  const { menu, general } = await getSidebarLinks();
 
   return (
-    <div className={`grid ${outerPaddingClassName} ${gapClassName}`}>
-
-      {/* Top row */}
-      <div className={`grid ${gapClassName} grid-cols-1 lg:grid-cols-[370px_minmax(0,_1fr)]`}>
-        <div className="rounded-2xl p-8 bg-white">
-          <TopBar onToggle={() => setOpen(!open)} />
-        </div>
-
-        <div className="rounded-2xl bg-white">
-          <Header />
-        </div>
-      </div>
-
-      {/* Bottom row */}
-      <div
-        className={`grid ${gapClassName} grid-cols-1 ${
-          open
-            ? "lg:grid-cols-[370px_minmax(0,_1fr)]"
-            : "lg:grid-cols-[0px_minmax(0,_1fr)]"
-        } transition-all duration-300 ease-in-out overflow-hidden`}
-      >
-
-        {/* Sidebar */}
-        <aside
-          className={`rounded-2xl p-8 self-start bg-white 
-          transform transition-all duration-300 ease-in-out delay-75
-          ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}
-        >
-          <Sidebar />
-        </aside>
-
-        {/* Main content */}
-        <main className="transition-all duration-300 ease-in-out">
-          {children}
-        </main>
-
-      </div>
-    </div>
+    <AppShellClient
+      gapClassName={gapClassName}
+      outerPaddingClassName={outerPaddingClassName}
+      session={session}
+      menu={menu}
+      general={general}
+    >
+      {children}
+    </AppShellClient>
   );
 }

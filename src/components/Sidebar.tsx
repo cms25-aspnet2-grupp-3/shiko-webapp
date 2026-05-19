@@ -1,26 +1,18 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 
-type MenuItem = {
+export type MenuItem = {
   title: string;
   path: string;
   icon: string;
 };
 
-export default function Sidebar() {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
-  const [general, setGeneral] = useState<MenuItem[]>([]);
+type SidebarProps = {
+  menu: MenuItem[];
+  general: MenuItem[];
+};
 
-  useEffect(() => {
-    fetch("https://shikosidebar-mike.azurewebsites.net/api/sidebar")
-      .then((res) => res.json())
-      .then((data) => {
-        setMenu(data.menu);
-        setGeneral(data.general);
-      });
-  }, []);
-
+export default async function Sidebar({ menu, general }: SidebarProps) {
   return (
     <div className="flex flex-col gap-6">
       {/* MENU */}
@@ -49,9 +41,9 @@ export default function Sidebar() {
           <button
             key={item.title}
             type="button"
-            onClick={(event) => {
+            onClick={async (event) => {
               event.preventDefault();
-              signOut({ callbackUrl: "/api/auth/signin" });
+              await signOut();
             }}
             className="w-full text-left"
           >
