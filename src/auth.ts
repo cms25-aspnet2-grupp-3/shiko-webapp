@@ -1,5 +1,6 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import type { JWT } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 type LoginResponse = {
@@ -20,6 +21,7 @@ const LOGIN_URL =
 const REFRESH_URL =
   "https://cms25-aspnet2-grupp3-auth-gateway-api.azurewebsites.net/api/auth/refresh";
 const isDev = process.env.NODE_ENV !== "production";
+const REFRESH_BUFFER_MS = 60_000;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -46,6 +48,70 @@ const isLoginResponse = (value: unknown): value is LoginResponse => {
     typeof value.user.email === "string" &&
     isStringArray(value.user.roles)
   );
+};
+
+const calculateExpiresAt = (expiresInSeconds: number): number =>
+  Date.now() + expiresInSeconds * 1000;
+
+const shouldRefreshToken = (expiresAt: number): boolean =>
+  !expiresAt || Date.now() >= expiresAt - REFRESH_BUFFER_MS;
+
+const getSecondsUntilRefresh = (expiresAt: number): number =>
+  Math.max(0, Math.ceil((expiresAt - REFRESH_BUFFER_MS - Date.now()) / 1000));
+
+const refreshToken = async (token: JWT): Promise<JWT> => {
+  try {
+    if (isDev) {
+      console.log("[auth] calling refresh endpoint");
+    }
+
+    const response = await fetch(REFRESH_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken: token.refreshToken }),
+    });
+
+    if (isDev) {
+      console.log("[auth] refresh response returned", response.status);
+    }
+
+    if (!response.ok) {
+      throw new Error(`Refresh request failed (${response.status})`);
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.toLowerCase().includes("application/json")) {
+      throw new Error("Refresh response was not JSON");
+    }
+
+    const payload: unknown = await response.json();
+    if (!isLoginResponse(payload)) {
+      throw new Error("Refresh token response shape was invalid");
+    }
+
+    return {
+      ...token,
+      userId: payload.user.userId,
+      userEmail: payload.user.email,
+      roles: payload.user.roles,
+      accessToken: payload.accessToken,
+      tokenType: payload.tokenType,
+      expiresIn: payload.expiresIn,
+      expiresAt: calculateExpiresAt(payload.expiresIn),
+      expiresAtUtc: payload.expiresAtUtc,
+      refreshToken: payload.refreshToken || token.refreshToken,
+      error: undefined,
+    };
+  } catch (error) {
+    const reason =
+      error instanceof Error ? error.message : "Unknown refresh failure";
+    console.error(`[auth] Refresh failed: ${reason}`);
+    return {
+      ...token,
+      error: "RefreshTokenError",
+      accessToken: "",
+    };
+  }
 };
 
 export const providerMap: Record<string, { id: string; name: string }> = {};
@@ -113,7 +179,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.accessToken = user.accessToken ?? "";
         token.tokenType = user.tokenType ?? "";
         token.expiresIn = user.expiresIn ?? 0;
-        token.expiresAt = Date.now() + (user.expiresIn ?? 0) * 1000;
+        token.expiresAt = calculateExpiresAt(user.expiresIn ?? 0);
         token.expiresAtUtc = user.expiresAtUtc ?? "";
         token.refreshToken = user.refreshToken ?? "";
         token.error = undefined;
@@ -122,46 +188,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (!asString(token.refreshToken)) {
         token.error = "RefreshTokenError";
+        token.accessToken = "";
         return token;
       }
 
       const expiresAt = asNumber(token.expiresAt);
-      const shouldRefresh = !expiresAt || Date.now() >= expiresAt;
-      if (!shouldRefresh) {
+      if (!shouldRefreshToken(expiresAt)) {
         return token;
       }
 
-      try {
-        console.log("[auth] calling refresh endpoint");
-        const response = await fetch(REFRESH_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken: token.refreshToken }),
-        });
-        console.log("[auth] refresh response returned", response.status);
-
-        const payload: unknown = await response.json();
-        if (!response.ok || !isLoginResponse(payload)) {
-          throw payload;
-        }
-
-        token.userId = payload.user.userId;
-        token.userEmail = payload.user.email;
-        token.roles = payload.user.roles;
-        token.accessToken = payload.accessToken;
-        token.tokenType = payload.tokenType;
-        token.expiresIn = payload.expiresIn;
-        token.expiresAt = Date.now() + payload.expiresIn * 1000;
-        token.expiresAtUtc = payload.expiresAtUtc;
-        token.refreshToken =
-          payload.refreshToken || asString(token.refreshToken);
-        token.error = undefined;
-      } catch (error) {
-        console.error("Error refreshing access token", error);
-        token.error = "RefreshTokenError";
-      }
-
-      return token;
+      return refreshToken(token);
     },
     session: async ({ session, token }) => {
       session.user = {
@@ -175,7 +211,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.tokenType = asString(token.tokenType);
       session.expiresIn = asNumber(token.expiresIn);
       session.expiresAtUtc = asString(token.expiresAtUtc);
-      session.refreshToken = asString(token.refreshToken);
       session.error =
         asString(token.error) === "RefreshTokenError"
           ? "RefreshTokenError"
@@ -225,7 +260,6 @@ declare module "next-auth" {
     tokenType: string;
     expiresIn: number;
     expiresAtUtc: string;
-    refreshToken: string;
     error?: "RefreshTokenError";
     user: { id: string; roles: string[] } & DefaultSession["user"];
   }
@@ -239,5 +273,20 @@ declare module "next-auth" {
     expiresIn: number;
     expiresAtUtc: string;
     refreshToken: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    userId?: string;
+    userEmail?: string;
+    roles?: string[];
+    accessToken?: string;
+    tokenType?: string;
+    expiresIn?: number;
+    expiresAt?: number;
+    expiresAtUtc?: string;
+    refreshToken?: string;
+    error?: "RefreshTokenError";
   }
 }
