@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import styles from "./Header.module.css";
-
 import {
   getHeaderUser,
   getHeaderMessages,
@@ -55,7 +54,7 @@ export default function Header() {
 
     loadHeaderUser();
   }, []);
-
+  
   useEffect(() => {
     async function loadHeaderMessages() {
       try {
@@ -70,7 +69,7 @@ export default function Header() {
 
     loadHeaderMessages();
   }, []);
-
+  
   useEffect(() => {
     async function loadHeaderNotifications() {
       try {

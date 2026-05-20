@@ -8,16 +8,12 @@ const nextConfig: NextConfig = {
         hostname: "shikoimagestoragegrp3.blob.core.windows.net",
         pathname: "/images/**",
       },
-    ],
-  },
-  async redirects() {
-    return [
       {
-        source: "/",
-        destination: "/dashboard",
-        permanent: false,
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+        pathname: "/**",
       },
-    ];
+    ],
   },
 };
 
