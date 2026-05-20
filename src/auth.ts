@@ -16,10 +16,20 @@ type LoginResponse = {
   };
 };
 
+type EmailCheckResponse = {
+  exists: boolean;
+  emailConfirmed: boolean;
+  email: string;
+  userId: string;
+  error: string;
+};
+
 const LOGIN_URL =
   "https://cms25-aspnet2-grupp3-auth-gateway-api.azurewebsites.net/api/auth/login";
 const REFRESH_URL =
   "https://cms25-aspnet2-grupp3-auth-gateway-api.azurewebsites.net/api/auth/refresh";
+const CHECK_URL =
+  "https://cms25-aspnet2-grupp3-auth-gateway-api.azurewebsites.net/api/auth/check";
 const isDev = process.env.NODE_ENV !== "production";
 const REFRESH_BUFFER_MS = 60_000;
 
@@ -50,6 +60,18 @@ const isLoginResponse = (value: unknown): value is LoginResponse => {
   );
 };
 
+const isEmailCheckResponse = (value: unknown): value is EmailCheckResponse => {
+  if (!isRecord(value)) return false;
+
+  return (
+    typeof value.exists === "boolean" &&
+    typeof value.emailConfirmed === "boolean" &&
+    typeof value.email === "string" &&
+    typeof value.userId === "string" &&
+    typeof value.error === "string"
+  );
+};
+
 const calculateExpiresAt = (expiresInSeconds: number): number =>
   Date.now() + expiresInSeconds * 1000;
 
@@ -58,6 +80,31 @@ const shouldRefreshToken = (expiresAt: number): boolean =>
 
 const getSecondsUntilRefresh = (expiresAt: number): number =>
   Math.max(0, Math.ceil((expiresAt - REFRESH_BUFFER_MS - Date.now()) / 1000));
+
+const getEmailConfirmedStatus = async (email: string): Promise<boolean> => {
+  if (!email) return true;
+
+  try {
+    const response = await fetch(CHECK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      return true;
+    }
+
+    const payload: unknown = await response.json();
+    if (!isEmailCheckResponse(payload)) {
+      return true;
+    }
+
+    return payload.emailConfirmed;
+  } catch {
+    return true;
+  }
+};
 
 const refreshToken = async (token: JWT): Promise<JWT> => {
   try {
@@ -157,9 +204,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        const checkResponse = await fetch(CHECK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: result.user.email }),
+        });
+
+        if (!checkResponse.ok) {
+          return null;
+        }
+
+        const checkResult: unknown = await checkResponse.json();
+        if (!isEmailCheckResponse(checkResult)) {
+          return null;
+        }
+
         return {
           id: result.user.userId,
           email: result.user.email,
+          emailConfirmed: checkResult.emailConfirmed,
           roles: result.user.roles,
           accessToken: result.accessToken,
           tokenType: result.tokenType,
@@ -171,10 +234,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    signIn: async ({ user }) => {
+      const emailConfirmed = await getEmailConfirmedStatus(user.email ?? "");
+      if (!emailConfirmed) {
+        return "/verify-code";
+      }
+
+      return true;
+    },
     jwt: async ({ token, user }) => {
       if (user) {
         token.userId = user.id ?? "";
         token.userEmail = user.email ?? "";
+        token.emailConfirmed = user.emailConfirmed ?? true;
         token.roles = user.roles ?? [];
         token.accessToken = user.accessToken ?? "";
         token.tokenType = user.tokenType ?? "";
@@ -204,6 +276,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...session.user,
         id: asString(token.userId),
         email: asString(token.userEmail),
+        emailConfirmed:
+          typeof token.emailConfirmed === "boolean" ? token.emailConfirmed : true,
         roles: isStringArray(token.roles) ? token.roles : [],
       };
 
@@ -221,22 +295,96 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized: async ({ auth, request }) => {
       const dashboard = "/dashboard";
       const signin = "/signin";
+      const verifyCode = "/verify-code";
       const pathname = request.nextUrl.pathname;
       const isRoot = pathname === "/";
       const isOnSignIn = pathname.startsWith(signin);
+      const isOnVerifyCode = pathname.startsWith(verifyCode);
+      const pendingVerifyCookie = request.cookies.get("pendingVerify")?.value;
+      const verifyEmailCookie = request.cookies.get("verifyEmail")?.value ?? "";
 
       const isLoggedIn = Boolean(
         auth?.accessToken && auth?.user?.id && auth?.user?.email,
       );
+      const isEmailConfirmed = isLoggedIn
+        ? await getEmailConfirmedStatus(auth?.user?.email ?? "")
+        : true;
+      const hasPendingVerify =
+        pendingVerifyCookie === "1" || Boolean(verifyEmailCookie);
 
       if (isRoot) {
+        if (!isLoggedIn && hasPendingVerify) {
+          const verifyUrl = new URL(verifyCode, request.nextUrl);
+          if (verifyEmailCookie) {
+            verifyUrl.searchParams.set("email", verifyEmailCookie);
+          }
+          return NextResponse.redirect(verifyUrl);
+        }
+
         return NextResponse.redirect(
-          new URL(isLoggedIn ? dashboard : signin, request.nextUrl),
+          new URL(
+            isLoggedIn ? (isEmailConfirmed ? dashboard : verifyCode) : signin,
+            request.nextUrl,
+          ),
         );
       }
 
       if (isOnSignIn && isLoggedIn) {
-        return NextResponse.redirect(new URL(dashboard, request.nextUrl));
+        return NextResponse.redirect(
+          new URL(isEmailConfirmed ? dashboard : verifyCode, request.nextUrl),
+        );
+      }
+
+      if (isOnSignIn && !isLoggedIn && hasPendingVerify) {
+        const verifyUrl = new URL(verifyCode, request.nextUrl);
+        if (verifyEmailCookie) {
+          verifyUrl.searchParams.set("email", verifyEmailCookie);
+        }
+        return NextResponse.redirect(verifyUrl);
+      }
+
+      if (isLoggedIn && !isEmailConfirmed && !isOnVerifyCode) {
+        const verifyUrl = new URL(verifyCode, request.nextUrl);
+        const verifyEmail = auth?.user?.email ?? "";
+        if (verifyEmail) {
+          verifyUrl.searchParams.set("email", verifyEmail);
+        }
+        const response = NextResponse.redirect(verifyUrl);
+        response.cookies.set("pendingVerify", "1", {
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 15 * 60,
+        });
+        if (verifyEmail) {
+          response.cookies.set("verifyEmail", verifyEmail, {
+            path: "/",
+            httpOnly: true,
+            sameSite: "lax",
+            maxAge: 15 * 60,
+          });
+        }
+        return response;
+      }
+
+      if (isOnVerifyCode) {
+        const verifyEmailParam = request.nextUrl.searchParams.get("email") ?? "";
+        const response = NextResponse.next();
+        response.cookies.set("pendingVerify", "1", {
+          path: "/",
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 15 * 60,
+        });
+        if (verifyEmailParam) {
+          response.cookies.set("verifyEmail", verifyEmailParam, {
+            path: "/",
+            httpOnly: true,
+            sameSite: "lax",
+            maxAge: 15 * 60,
+          });
+        }
+        return response;
       }
 
       if (!isOnSignIn && !isLoggedIn) {
@@ -261,12 +409,17 @@ declare module "next-auth" {
     expiresIn: number;
     expiresAtUtc: string;
     error?: "RefreshTokenError";
-    user: { id: string; roles: string[] } & DefaultSession["user"];
+    user: {
+      id: string;
+      emailConfirmed: boolean;
+      roles: string[];
+    } & DefaultSession["user"];
   }
 
   interface User {
     id: string;
     email: string;
+    emailConfirmed?: boolean;
     roles: string[];
     accessToken: string;
     tokenType: string;
@@ -280,6 +433,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     userId?: string;
     userEmail?: string;
+    emailConfirmed?: boolean;
     roles?: string[];
     accessToken?: string;
     tokenType?: string;

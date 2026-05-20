@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import SubmitButton from "@/components/auth/SubmitButton";
-import { auth, providerMap, signIn } from "@/auth";
+import { providerMap, signIn } from "@/auth";
 
 const SIGNIN_ERROR_URL = "/signin";
 const DASHBOARD_URL = "/dashboard";
@@ -30,11 +30,6 @@ async function handleSignInAction(action: () => Promise<void>) {
 export default async function SignInPage(props: {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
-  const session = await auth();
-  if (session?.user && session?.error !== "RefreshTokenError") {
-    redirect(DASHBOARD_URL);
-  }
-
   const searchParams = await props.searchParams;
   const callbackUrl = searchParams?.callbackUrl ?? DASHBOARD_URL;
   const errorMessage = getSignInErrorMessage(searchParams?.error);
