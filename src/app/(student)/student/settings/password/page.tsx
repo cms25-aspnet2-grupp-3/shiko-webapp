@@ -26,26 +26,26 @@ export default function ChangePasswordPage() {
           </div>
         </section>
 
-        <section className="mt-7 grid grid-cols-1 gap-5 xl:grid-cols-[200px_1fr]">
-          <div className="pt-2">
-            <h2 className="text-[20px] font-semibold text-[#273142]">
+        <section className="mt-7 grid grid-cols-1 gap-5 xl:grid-cols-[220px_1fr]">
+          <div className="pt-3">
+            <h2 className="text-[22px] font-semibold text-[#273142]">
               Password
             </h2>
-            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+            <p className="mt-2 max-w-[190px] text-[13px] leading-8 text-[#9AA3B2]">
               Please enter your current password to change your password.
             </p>
           </div>
 
-          <div className="rounded-[18px] bg-white p-7 shadow-sm ring-1 ring-[#EEF2F6]">
+          <div className="rounded-[20px] bg-white px-8 py-7 shadow-sm ring-1 ring-[#EEF2F6]">
             <h3 className="text-[22px] font-semibold text-[#273142]">
               Password
             </h3>
-            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+            <p className="mt-3 text-[13px] leading-7 text-[#9AA3B2]">
               Change password. Verification code will be sent to your email
               address.
             </p>
 
-            <form className="mt-7 space-y-5">
+            <form className="mt-8 space-y-5">
               <div>
                 <label
                   htmlFor="currentPassword"
@@ -78,7 +78,7 @@ export default function ChangePasswordPage() {
                   defaultValue="123456789"
                   className="h-[44px] w-full rounded-[10px] border border-[#E8ECF2] bg-white px-4 text-[14px] text-[#273142] outline-none transition focus:border-[#F35B32]"
                 />
-                <p className="mt-2 text-[11px] text-[#9AA3B2]">
+                <p className="mt-2 text-[11px] leading-5 text-[#9AA3B2]">
                   Your new password must be more than 10 characters long and.
                 </p>
               </div>
@@ -100,17 +100,17 @@ export default function ChangePasswordPage() {
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-1">
+              <div className="flex flex-wrap items-center gap-4 pt-1">
                 <button
                   type="button"
-                  className="h-[36px] rounded-[8px] bg-[#F3F4F6] px-4 text-[12px] font-medium text-[#B0B7C3]"
+                  className="h-[40px] rounded-[10px] bg-[#F3F4F6] px-6 text-[13px] font-medium text-[#B0B7C3]"
                 >
                   Back
                 </button>
 
                 <button
                   type="button"
-                  className="h-[36px] rounded-[8px] bg-[#F35B32] px-5 text-[12px] font-medium text-white transition hover:bg-[#df4f29]"
+                  className="h-[40px] rounded-[10px] bg-[#F35B32] px-7 text-[13px] font-medium text-white transition hover:bg-[#df4f29]"
                 >
                   Save &amp; Next
                 </button>
@@ -119,51 +119,60 @@ export default function ChangePasswordPage() {
           </div>
         </section>
 
-        <section className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-[200px_1fr]">
-          <div className="pt-2">
-            <h2 className="text-[20px] font-semibold text-[#273142]">
+        <section className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[220px_1fr]">
+          <div className="pt-3">
+            <h2 className="text-[22px] font-semibold text-[#273142]">
               Login Activities
             </h2>
-            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+            <p className="mt-2 max-w-[190px] text-[13px] leading-7 text-[#9AA3B2]">
               See your login activities
             </p>
           </div>
 
-          <div className="rounded-[18px] bg-white p-7 shadow-sm ring-1 ring-[#EEF2F6]">
+          <div className="rounded-[20px] bg-white px-8 py-7 shadow-sm ring-1 ring-[#EEF2F6]">
             <h3 className="text-[22px] font-semibold text-[#273142]">
               Where you&apos;re logged in
             </h3>
-            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+            <p className="mt-3 max-w-[620px] text-[13px] leading-7 text-[#9AA3B2]">
               We&apos;ll alert you via hasan@gmail.com if there is any unusual
               activity in your account.
             </p>
 
-            <div className="mt-7 space-y-5">
-              <div className="border-b border-[#EEF2F6] pb-4">
-                <p className="text-[14px] font-medium text-[#273142]">
-                  Mac - Stockholm, SE, Sweden
-                </p>
-                <p className="mt-1 text-[12px] text-[#9AA3B2]">
-                  Chrome · <span className="text-[#F35B32]">Active Now</span>
-                </p>
+            <div className="mt-7 space-y-0">
+              <div className="flex items-start gap-3 border-b border-[#EEF2F6] py-5">
+                <div className="mt-0.5 text-[16px] text-[#9AA3B2]">💻</div>
+                <div>
+                  <p className="text-[14px] font-medium text-[#273142]">
+                    Mac - Stockholm, SE, Sweden
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                    Chrome · <span className="text-[#F35B32]">Active Now</span>
+                  </p>
+                </div>
               </div>
 
-              <div className="border-b border-[#EEF2F6] pb-4">
-                <p className="text-[14px] font-medium text-[#273142]">
-                  Mac - Uppsala, SE, Sweden
-                </p>
-                <p className="mt-1 text-[12px] text-[#9AA3B2]">
-                  Chrome · Mar at 7:25 pm
-                </p>
+              <div className="flex items-start gap-3 border-b border-[#EEF2F6] py-5">
+                <div className="mt-0.5 text-[16px] text-[#9AA3B2]">💻</div>
+                <div>
+                  <p className="text-[14px] font-medium text-[#273142]">
+                    Mac - Uppsala, SE, Sweden
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                    Chrome · Mar at 7:25 pm
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-[14px] font-medium text-[#273142]">
-                  Mac - Stockholm, SE, Sweden
-                </p>
-                <p className="mt-1 text-[12px] text-[#9AA3B2]">
-                  Chrome · Mar at 6:10 pm
-                </p>
+              <div className="flex items-start gap-3 pt-5">
+                <div className="mt-0.5 text-[16px] text-[#9AA3B2]">💻</div>
+                <div>
+                  <p className="text-[14px] font-medium text-[#273142]">
+                    Mac - Stockholm, SE, Sweden
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                    Chrome · Mar at 6:10 pm
+                  </p>
+                </div>
               </div>
             </div>
           </div>
