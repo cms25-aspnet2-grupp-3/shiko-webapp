@@ -1,7 +1,7 @@
 export default function ChangePasswordPage() {
   return (
     <main className="px-6 py-8 sm:px-8">
-      <div className="mx-auto w-full max-w-[930px]">
+      <div className="mx-auto w-full max-w-[980px]">
         <section>
           <h1 className="text-[34px] font-semibold leading-[1.1] text-[#273142]">
             Settings
@@ -116,6 +116,56 @@ export default function ChangePasswordPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </section>
+
+        <section className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-[200px_1fr]">
+          <div className="pt-2">
+            <h2 className="text-[20px] font-semibold text-[#273142]">
+              Login Activities
+            </h2>
+            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+              See your login activities
+            </p>
+          </div>
+
+          <div className="rounded-[18px] bg-white p-7 shadow-sm ring-1 ring-[#EEF2F6]">
+            <h3 className="text-[22px] font-semibold text-[#273142]">
+              Where you&apos;re logged in
+            </h3>
+            <p className="mt-2 text-[13px] leading-6 text-[#9AA3B2]">
+              We&apos;ll alert you via hasan@gmail.com if there is any unusual
+              activity in your account.
+            </p>
+
+            <div className="mt-7 space-y-5">
+              <div className="border-b border-[#EEF2F6] pb-4">
+                <p className="text-[14px] font-medium text-[#273142]">
+                  Mac - Stockholm, SE, Sweden
+                </p>
+                <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                  Chrome · <span className="text-[#F35B32]">Active Now</span>
+                </p>
+              </div>
+
+              <div className="border-b border-[#EEF2F6] pb-4">
+                <p className="text-[14px] font-medium text-[#273142]">
+                  Mac - Uppsala, SE, Sweden
+                </p>
+                <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                  Chrome · Mar at 7:25 pm
+                </p>
+              </div>
+
+              <div>
+                <p className="text-[14px] font-medium text-[#273142]">
+                  Mac - Stockholm, SE, Sweden
+                </p>
+                <p className="mt-1 text-[12px] text-[#9AA3B2]">
+                  Chrome · Mar at 6:10 pm
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </div>
