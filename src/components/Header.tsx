@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import type { Session } from "next-auth";
+
 import styles from "./Header.module.css";
 import {
   getHeaderUser,
@@ -17,11 +17,8 @@ import {
   HeaderSearchResult,
 } from "@/services/headerService";
 
-type HeaderProps = {
-  session: Session | null;
-};
 
-export default function Header({ session }: HeaderProps) {
+export default function Header() {
   const router = useRouter();
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -57,6 +54,7 @@ export default function Header({ session }: HeaderProps) {
 
     loadHeaderUser();
   }, []);
+  
   useEffect(() => {
     async function loadHeaderMessages() {
       try {
@@ -71,6 +69,7 @@ export default function Header({ session }: HeaderProps) {
 
     loadHeaderMessages();
   }, []);
+  
   useEffect(() => {
     async function loadHeaderNotifications() {
       try {
@@ -85,6 +84,7 @@ export default function Header({ session }: HeaderProps) {
 
     loadHeaderNotifications();
   }, []);
+
   useEffect(() => {
     const trimmedQuery = searchQuery.trim();
 
@@ -112,28 +112,38 @@ export default function Header({ session }: HeaderProps) {
 
   const fullName = user ? `${user.fullName}` : "Guest User";
 
-  const email = session?.user?.email ?? user?.email ?? "No email available";
+  const email = user?.email ?? "No email available";
 
   const profileImageUrl =
     user?.profileImageUrl ??
     "https://shikoimagestoragegrp3.blob.core.windows.net/images/profile-sample.png";
 
+  function closeAllDropdowns() {
+    setIsMessagesOpen(false);
+    setIsNotificationsOpen(false);
+    setIsProfileModalOpen(false);
+    setIsSearchOpen(false);
+  }
+
   function openProfileModal() {
     setIsProfileModalOpen(true);
     setIsMessagesOpen(false);
     setIsNotificationsOpen(false);
+    setIsSearchOpen(false);
   }
 
   function toggleMessages() {
     setIsMessagesOpen((current) => !current);
     setIsNotificationsOpen(false);
     setIsProfileModalOpen(false);
+    setIsSearchOpen(false);
   }
 
   function toggleNotifications() {
     setIsNotificationsOpen((current) => !current);
     setIsMessagesOpen(false);
     setIsProfileModalOpen(false);
+    setIsSearchOpen(false);
   }
 
   function handleSearch(event: React.FormEvent<HTMLFormElement>) {
@@ -145,6 +155,7 @@ export default function Header({ session }: HeaderProps) {
       return;
     }
 
+    closeAllDropdowns();
     router.push(`/search?query=${encodeURIComponent(trimmedQuery)}`);
   }
 
@@ -206,7 +217,7 @@ export default function Header({ session }: HeaderProps) {
                     key={`${result.type}-${result.id}`}
                     href={result.url}
                     onClick={() => {
-                      setIsSearchOpen(false);
+                      closeAllDropdowns();
                       setSearchQuery("");
                     }}
                     className="block rounded-xl p-3 transition hover:bg-[#F9CCC8]"
@@ -250,15 +261,17 @@ export default function Header({ session }: HeaderProps) {
 
           <div
             className={`absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5
-                                    transform transition-all duration-200 ease-out
-                                ${
-                                  isMessagesOpen
-                                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                                }`}
+              transform transition-all duration-200 ease-out
+              ${
+                isMessagesOpen
+                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+              }`}
           >
             <div className="p-5">
-              <h3 className="text-sm font-semibold text-slate-900">Messages</h3>
+              <h3 className="text-sm font-semibold text-slate-900">
+                Messages
+              </h3>
 
               <div className="mt-4 space-y-3">
                 {isMessagesLoading ? (
@@ -272,7 +285,7 @@ export default function Header({ session }: HeaderProps) {
                     <Link
                       key={message.id}
                       href={`/${message.url}`}
-                      onClick={() => setIsMessagesOpen(false)}
+                      onClick={closeAllDropdowns}
                       className={`flex items-center gap-3 rounded-xl p-3 transition hover:bg-[#F9CCC8] ${
                         message.isRead ? "bg-white" : "bg-slate-50"
                       }`}
@@ -307,7 +320,7 @@ export default function Header({ session }: HeaderProps) {
 
               <Link
                 href="/messages"
-                onClick={() => setIsMessagesOpen(false)}
+                onClick={closeAllDropdowns}
                 className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]"
               >
                 View all messages
@@ -335,12 +348,12 @@ export default function Header({ session }: HeaderProps) {
 
           <div
             className={`absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5
-                                    transform transition-all duration-200 ease-out
-                                ${
-                                  isNotificationsOpen
-                                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                                }`}
+              transform transition-all duration-200 ease-out
+              ${
+                isNotificationsOpen
+                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+              }`}
           >
             <div className="p-5">
               <h3 className="text-sm font-semibold text-slate-900">
@@ -361,7 +374,7 @@ export default function Header({ session }: HeaderProps) {
                     <Link
                       key={notification.id}
                       href={`/${notification.url}`}
-                      onClick={() => setIsNotificationsOpen(false)}
+                      onClick={closeAllDropdowns}
                       className={`block rounded-xl p-3 transition hover:bg-[#F9CCC8] ${
                         notification.isRead ? "bg-white" : "bg-slate-50"
                       }`}
@@ -390,7 +403,7 @@ export default function Header({ session }: HeaderProps) {
 
               <Link
                 href="/notifications"
-                onClick={() => setIsNotificationsOpen(false)}
+                onClick={closeAllDropdowns}
                 className="mt-4 block w-full rounded-xl bg-[#E9ECF3] px-3 py-2 text-center text-sm transition hover:bg-[#BAC4D9]"
               >
                 View all notifications
@@ -409,8 +422,8 @@ export default function Header({ session }: HeaderProps) {
             onClick={openProfileModal}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
                 openProfileModal();
               }
             }}
@@ -437,12 +450,12 @@ export default function Header({ session }: HeaderProps) {
 
           <div
             className={`absolute right-0 top-0 z-50 w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/5
-                                    transform transition-all duration-200 ease-out
-                            ${
-                              isProfileModalOpen
-                                ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                                : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                            }`}
+              transform transition-all duration-200 ease-out
+              ${
+                isProfileModalOpen
+                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+              }`}
           >
             <div className="p-5">
               <div className="flex items-center gap-4">
@@ -466,8 +479,7 @@ export default function Header({ session }: HeaderProps) {
               <div className="mt-5 space-y-2">
                 <Link
                   href="/profile"
-                  onClick={() => setIsProfileModalOpen(false)}
-                  type="button"
+                  onClick={closeAllDropdowns}
                   className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]"
                 >
                   Show Profile
@@ -481,8 +493,7 @@ export default function Header({ session }: HeaderProps) {
 
                 <Link
                   href="/settings"
-                  onClick={() => setIsProfileModalOpen(false)}
-                  type="button"
+                  onClick={closeAllDropdowns}
                   className="flex w-full items-center justify-between cursor-pointer rounded-xl px-3 py-2 transition hover:bg-[#F9CCC8]"
                 >
                   Settings
@@ -510,7 +521,7 @@ export default function Header({ session }: HeaderProps) {
 
               <button
                 type="button"
-                onClick={() => setIsProfileModalOpen(false)}
+                onClick={closeAllDropdowns}
                 className="mt-4 w-full rounded-xl bg-[#E9ECF3] cursor-pointer px-3 py-2 transition hover:bg-[#BAC4D9]"
               >
                 Close
