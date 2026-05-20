@@ -35,7 +35,7 @@ export default function AppShellClient({
           <TopBar onToggle={() => setOpen(!open)} />
         </div>
         <div className="rounded-2xl bg-white">
-          <Header session={session} />
+          <Header />
         </div>
       </div>
       <div
